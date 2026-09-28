@@ -1,10 +1,12 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 /**
  * PAGE 1 — THE ENTRANCE
  * The ticket hall: sets the tone, offers three ways in.
  */
 export default function EntrancePage() {
+  const navigate = useNavigate();
+
   return (
     <div className="relative flex min-h-[calc(100vh-8rem)] flex-col items-center justify-center px-6 py-20 text-center">
       {/* Soft lamp pool above the title */}
@@ -31,11 +33,14 @@ export default function EntrancePage() {
         prove it.&rdquo;
       </p>
 
-      {/* Three ways in — tour and artifact list arrive in Prompt 2 */}
+      {/* Three ways in — the tour jumps straight into the timed tour */}
       <div className="mt-12 flex flex-col items-center gap-4 sm:flex-row">
         <Link to="/bedroom" className="btn-lamp">
           Enter the Bedroom
         </Link>
+        <button type="button" onClick={() => navigate("/bedroom#tour")} className="btn-ghost">
+          Take the 30-Second Tour
+        </button>
         <Link to="/failures" className="btn-ghost">
           Visit the Museum of Failures
         </Link>
