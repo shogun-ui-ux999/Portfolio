@@ -8,6 +8,11 @@ import {
   type ReactNode,
 } from "react";
 import { secretArtifacts } from "../data/artifacts";
+import {
+  fetchMuseumAudioUrls,
+  getCachedMuseumAudioUrls,
+  type MuseumAudioMap,
+} from "../lib/museumAudio";
 
 interface MuseumState {
   /** Artifact ids the visitor has opened */
@@ -30,6 +35,12 @@ interface MuseumState {
   /** Whether the visitor has entered the museum (Entrance → Bedroom) */
   entered: boolean;
   setEntered: (v: boolean) => void;
+  /**
+   * Public audio-guide URLs keyed by artifact id, fetched once per
+   * session from the server (which holds the UploadThing token).
+   * Empty object = transcript-only fallback everywhere.
+   */
+  audioUrls: MuseumAudioMap;
 }
 
 const MuseumContext = createContext<MuseumState | null>(null);
@@ -41,6 +52,21 @@ export function MuseumProvider({ children }: { children: ReactNode }) {
   const [listViewOpen, setListViewOpen] = useState(false);
   const [foundSecretCollection, setFoundSecretCollection] = useState(false);
   const [entered, setEntered] = useState(false);
+  // Fetched once per session; every modal and the welcome player read
+  // from this cache instead of hitting UploadThing again.
+  const [audioUrls, setAudioUrls] = useState<MuseumAudioMap>(
+    () => getCachedMuseumAudioUrls() ?? {},
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchMuseumAudioUrls().then((map) => {
+      if (!cancelled && Object.keys(map).length > 0) setAudioUrls(map);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const openArtifact = useCallback((id: string) => {
     setActiveArtifactId(id);
@@ -80,6 +106,7 @@ export function MuseumProvider({ children }: { children: ReactNode }) {
       foundSecretCollection,
       entered,
       setEntered,
+      audioUrls,
     }),
     [
       viewedIds,
@@ -94,6 +121,7 @@ export function MuseumProvider({ children }: { children: ReactNode }) {
       closeListView,
       foundSecretCollection,
       entered,
+      audioUrls,
     ]
   );
 

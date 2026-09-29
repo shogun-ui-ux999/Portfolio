@@ -48,7 +48,7 @@ export default function QuickTour() {
       onClick={closeTour}
     >
       <div
-        className="animate-fade-up relative w-full max-w-lg rounded-2xl border border-museum-gold/40 bg-night-800 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.75)] sm:p-9"
+        className="animate-scale-in relative w-full max-w-lg rounded-2xl border border-museum-gold/40 bg-night-800 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.75)] sm:p-9"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -114,7 +114,7 @@ export default function QuickTour() {
           </button>
 
           {isLast ? (
-            <div className="flex flex-wrap justify-end gap-2.5">
+            <div className="animate-stamp flex flex-wrap justify-end gap-2.5">
               <button
                 type="button"
                 onClick={() => {
