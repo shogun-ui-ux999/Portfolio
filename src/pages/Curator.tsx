@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { curator } from "../data/artifacts";
+import { Reveal, Typewriter } from "../components/motion";
 
 /** Curator's Note — a personal letter from the museum's curator. */
 export default function Curator() {
@@ -16,8 +17,10 @@ export default function Curator() {
     <section className="mx-auto min-h-dvh max-w-3xl px-5 py-24 sm:px-6">
       {/* Header */}
       <div className="text-center">
-        <p className="museum-label text-[0.6rem] text-museum-gold/80">About the Museum</p>
-        <h1 className="mt-3 font-serif text-4xl text-paper-50 sm:text-5xl">Curator's Note</h1>
+        <p className="museum-label animate-fade-up text-[0.6rem] text-museum-gold/80">About the Museum</p>
+        <h1 className="mt-3 font-serif text-4xl text-paper-50 sm:text-5xl">
+          <Typewriter text="Curator's Note" speedMs={45} caret />
+        </h1>
         <p className="mt-3 font-serif text-lg text-paper-200/75 italic">
           {curator.subtitle}
         </p>
@@ -45,9 +48,15 @@ export default function Curator() {
         <div className="space-y-5 text-[0.95rem] leading-[1.85] text-paper-200/90">
           {curator.statement.split(". ").map((sentence, i, arr) =>
             i < arr.length - 1 ? (
-              <p key={i}>{sentence}.</p>
+              <Reveal key={i} variant="animate-fade-up" delayMs={i * 40}>
+                <p>{sentence}.</p>
+              </Reveal>
             ) : (
-              sentence.trim() && <p key={i}>{sentence}</p>
+              sentence.trim() && (
+                <Reveal key={i} variant="animate-fade-up" delayMs={i * 40}>
+                  <p>{sentence}</p>
+                </Reveal>
+              )
             )
           )}
         </div>
@@ -63,10 +72,11 @@ export default function Curator() {
       <div className="mt-14">
         <h2 className="museum-label text-[0.6rem] text-museum-gold/80">What I Care About</h2>
         <div className="mt-4 flex flex-wrap gap-2.5">
-          {curator.values.map((v) => (
+          {curator.values.map((v, i) => (
             <span
               key={v}
-              className="rounded-full border border-museum-gold/30 bg-museum-gold/5 px-4 py-2 font-serif text-sm text-paper-100 transition-colors duration-300 hover:border-museum-gold/60 hover:bg-museum-gold/10"
+              className="animate-scale-in rounded-full border border-museum-gold/30 bg-museum-gold/5 px-4 py-2 font-serif text-sm text-paper-100 transition-all duration-300 hover:-translate-y-0.5 hover:rotate-1 hover:border-museum-gold/60 hover:bg-museum-gold/10"
+              style={{ animationDelay: `${i * 80}ms` }}
             >
               {v}
             </span>

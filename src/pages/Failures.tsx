@@ -21,11 +21,11 @@ export default function Failures() {
       <div className="mx-auto max-w-4xl">
         {/* Header */}
         <div className="text-center">
-          <p className="museum-label text-[0.6rem] text-fail-red/80">The Shadow Room</p>
-          <h1 className="mt-3 font-serif text-4xl text-paper-50 sm:text-5xl">
+          <p className="museum-label animate-fade-up text-[0.6rem] text-fail-red/80">The Shadow Room</p>
+          <h1 className="animate-glitch mt-3 font-serif text-4xl text-paper-50 sm:text-5xl">
             The Museum of Failures
           </h1>
-          <p className="mt-3 font-serif text-lg text-paper-200/75 italic">
+          <p className="animate-fade-up mt-3 font-serif text-lg text-paper-200/75 italic [animation-delay:300ms]">
             Exhibits that did not work, but changed how I think.
           </p>
           <p
@@ -53,11 +53,12 @@ export default function Failures() {
         {/* Failure exhibits */}
         <div className="mt-10 grid gap-6 sm:grid-cols-3">
           {failureArtifacts.map((a, i) => (
-            <FailureCard
-              key={a.id}
-              artifact={a}
-              tilt={i === 1 ? "rotate-0" : i === 0 ? "-rotate-1" : "rotate-1"}
-            />
+            <div key={a.id} className="animate-fade-up" style={{ animationDelay: `${i * 160}ms` }}>
+              <FailureCard
+                artifact={a}
+                tilt={i === 1 ? "rotate-0" : i === 0 ? "-rotate-1" : "rotate-1"}
+              />
+            </div>
           ))}
         </div>
 
@@ -95,10 +96,11 @@ function FailureCard({
       onClick={() => openArtifact(artifact.id)}
       className={`group relative flex flex-col items-center rounded-2xl border border-paper-400/12 bg-night-800/50 p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:border-fail-red/40 hover:bg-night-800/80 hover:shadow-[0_18px_45px_rgba(0,0,0,0.6)] ${tilt}`}
     >
-      {/* Faded stamp */}
+      {/* Stamped exhibit mark — stamps itself in on reveal */}
       <span
         aria-hidden
-        className="museum-label absolute top-3 right-3 rotate-6 rounded-sm border border-fail-red/40 px-1.5 py-0.5 text-[0.45rem] text-fail-red/70"
+        className="animate-stamp museum-label absolute top-3 right-3 rounded-sm border border-fail-red/40 bg-night-900/60 px-1.5 py-0.5 text-[0.45rem] text-fail-red/70"
+        style={{ transform: "rotate(6deg)" }}
       >
         Failure Exhibit
       </span>

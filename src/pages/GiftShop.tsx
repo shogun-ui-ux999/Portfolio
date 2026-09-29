@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { giftShop } from "../data/artifacts";
 import { VisitorUploadDropzone } from "../lib/uploadthing";
+import { Typewriter } from "../components/motion";
 
 /** The Gift Shop — warm, memorable end to the tour. */
 export default function GiftShop() {
@@ -27,12 +28,12 @@ export default function GiftShop() {
         </p>
       </div>
 
-      {/* Souvenir cards */}
+      {/* Souvenir cards — slide onto the shelf from both sides */}
       <div className="mt-12 grid gap-5 sm:grid-cols-2">
         {/* Email */}
         <a
           href={`mailto:${giftShop.email}`}
-          className="group flex flex-col rounded-2xl border border-paper-400/15 bg-night-800/40 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-museum-gold/45 hover:shadow-[0_18px_45px_rgba(0,0,0,0.5)]"
+          className="animate-fade-left group flex flex-col rounded-2xl border border-paper-400/15 bg-night-800/40 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-museum-gold/45 hover:shadow-[0_18px_45px_rgba(0,0,0,0.5)]"
         >
           <span className="museum-label text-[0.5rem] text-museum-gold/80">Correspondence</span>
           <span className="mt-3 flex items-center gap-2.5 font-serif text-lg text-paper-50">
@@ -50,7 +51,7 @@ export default function GiftShop() {
           href={giftShop.runClubUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="group flex flex-col rounded-2xl border border-paper-400/15 bg-night-800/40 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-amber-glow/45 hover:shadow-[0_18px_45px_rgba(0,0,0,0.5)]"
+          className="animate-fade-right group flex flex-col rounded-2xl border border-paper-400/15 bg-night-800/40 p-6 transition-all duration-300 [animation-delay:150ms] hover:-translate-y-1 hover:border-amber-glow/45 hover:shadow-[0_18px_45px_rgba(0,0,0,0.5)]"
         >
           <span className="museum-label text-[0.5rem] text-amber-glow/80">Built From Scratch</span>
           <span className="mt-3 flex items-center gap-2.5 font-serif text-lg text-paper-50">
@@ -198,11 +199,11 @@ export default function GiftShop() {
         </div>
       </div>
 
-      {/* Closing */}
+      {/* Closing — the curator types his farewell */}
       <div className="mt-16 text-center">
         <div aria-hidden className="mx-auto h-px w-24 bg-gradient-to-r from-transparent via-museum-gold/50 to-transparent" />
         <p className="mx-auto mt-8 max-w-md font-serif text-xl leading-relaxed text-paper-100/90 italic">
-          "{giftShop.closingMessage}"
+          <Typewriter text={`"${giftShop.closingMessage}"`} speedMs={34} />
         </p>
         <p className="mt-4 font-hand text-2xl text-amber-glow/85">— Anchit</p>
 

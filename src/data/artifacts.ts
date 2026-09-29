@@ -50,6 +50,13 @@ export interface Artifact {
   evidenceLinks?: EvidenceLink[];
   evidenceDetails?: EvidenceDetail[];
   audioGuideScript?: string;
+  /**
+   * Optional photo of the real object. Drop a file into
+   * `public/artifacts/<id>.jpg` (or set any path/URL here) and the
+   * bedroom + plaque render it with the warm night-room treatment;
+   * when absent, the CSS glyph illustration is shown instead.
+   */
+  imageUrl?: string;
   /** Visual-only: where the object sits in the room */
   position: "desk" | "shelf" | "wall" | "floor" | "nightstand" | "drawer" | "failure-wing";
   isFailure: boolean;

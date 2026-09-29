@@ -91,7 +91,43 @@ body {
   border-radius: 2px;
 }
 
-/* Respect reduced motion */
+/* ── ARTIFACT PHOTO TREATMENT — "messy nostalgia" ────────────
+   Real photos are tilted, shadowed, and graded like they were
+   shot at midnight under the desk lamp. */
+.artifact-photo {
+  display: inline-block;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid rgba(183, 165, 130, 0.25);
+  transform: rotate(-2deg);
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(245, 238, 218, 0.06);
+  filter: sepia(0.22) saturate(0.88) contrast(1.05) brightness(0.92);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), filter 0.45s ease, box-shadow 0.45s ease;
+}
+.artifact-photo:hover {
+  transform: rotate(0deg) scale(1.03);
+  filter: sepia(0.1) saturate(1) contrast(1.04) brightness(1);
+  box-shadow:
+    0 20px 46px rgba(0, 0, 0, 0.75),
+    0 0 32px rgba(232, 163, 61, 0.18);
+}
+.artifact-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+}
+
+/* ── ANIMATION SYSTEM ───────────────────────────────────────
+   Organic ease curves, GPU-friendly (opacity/transform/filter).
+   Every variant is defined once and reused across the museum;
+   the reduced-motion block below neutralizes all of them.
+   ─────────────────────────────────────────────────────────── */
+
+/* Respect reduced motion — every animation and transition */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -103,22 +139,166 @@ body {
   }
 }
 
-/* Keyframes */
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(14px) scale(0.985); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+@keyframes fade-up-kf {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@keyframes fade-down-kf {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-@keyframes lamp-flicker {
+@keyframes fade-left-kf {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes fade-right-kf {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes scale-in-kf {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes blur-in-kf {
+  from { opacity: 0; filter: blur(10px); }
+  to { opacity: 1; filter: blur(0); }
+}
+@keyframes slide-reveal-kf {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+@keyframes float-loop-kf {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes pulse-glow-kf {
+  0%, 100% { box-shadow: 0 0 18px rgba(232, 163, 61, 0.18); }
+  50% { box-shadow: 0 0 42px rgba(232, 163, 61, 0.45); }
+}
+@keyframes breathe-kf {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+@keyframes shimmer-kf {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+@keyframes wave-kf {
+  0%, 100% { height: 30%; }
+  50% { height: 100%; }
+}
+@keyframes intro-letter-kf {
+  from { opacity: 0; filter: blur(10px); transform: translateY(8px); }
+  to { opacity: 1; filter: blur(0); transform: translateY(0); }
+}
+@keyframes drop-in-kf {
+  0% { opacity: 0; transform: translateY(-26px); }
+  62% { opacity: 1; transform: translateY(3px); }
+  82% { transform: translateY(-2px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes flicker-screen-kf {
+  0%, 100% { opacity: 1; }
+  3% { opacity: 0.72; }
+  5% { opacity: 1; }
+  47% { opacity: 1; }
+  49% { opacity: 0.85; }
+  51% { opacity: 1; }
+}
+@keyframes page-flutter-kf {
+  0%, 88%, 100% { transform: rotate(0deg); }
+  91% { transform: rotate(-1.2deg); }
+  94% { transform: rotate(0.8deg); }
+  97% { transform: rotate(-0.4deg); }
+}
+@keyframes phone-glow-kf {
+  0%, 78%, 100% { opacity: 0.25; }
+  84% { opacity: 0.9; }
+  90% { opacity: 0.3; }
+}
+@keyframes date-pulse-kf {
+  0%, 100% { box-shadow: 0 0 6px rgba(176, 82, 74, 0.25); }
+  50% { box-shadow: 0 0 14px rgba(176, 82, 74, 0.55); }
+}
+@keyframes glitch-kf {
+  0%, 6%, 100% { opacity: 1; transform: none; text-shadow: none; }
+  2% { opacity: 0.6; transform: translateX(-2px); text-shadow: 2px 0 rgba(176, 82, 74, 0.8), -2px 0 rgba(127, 180, 217, 0.8); }
+  4% { opacity: 0.9; transform: translateX(2px); }
+}
+@keyframes stamp-kf {
+  0% { opacity: 0; transform: scale(1.9) rotate(8deg); }
+  60% { opacity: 1; transform: scale(0.94) rotate(6deg); }
+  100% { opacity: 1; transform: scale(1) rotate(6deg); }
+}
+@keyframes dust-kf {
+  0% { transform: translate(0, 0); opacity: 0; }
+  12% { opacity: 0.35; }
+  88% { opacity: 0.3; }
+  100% { transform: translate(14px, -46px); opacity: 0; }
+}
+@keyframes sway-kf {
+  0%, 100% { transform: rotate(-0.6deg); }
+  50% { transform: rotate(0.6deg); }
+}
+@keyframes lamp-breathe-kf {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+@keyframes screen-cast-kf {
+  0%, 100% { opacity: 0.55; }
+  48% { opacity: 0.55; }
+  52% { opacity: 0.8; }
+  56% { opacity: 0.5; }
+}
+
+.animate-fade-up { animation: fade-up-kf 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-fade-down { animation: fade-down-kf 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-fade-left { animation: fade-left-kf 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-fade-right { animation: fade-right-kf 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-scale-in { animation: scale-in-kf 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-blur-in { animation: blur-in-kf 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-slide-reveal { animation: slide-reveal-kf 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-float-loop { animation: float-loop-kf 6s ease-in-out infinite; }
+.animate-pulse-glow { animation: pulse-glow-kf 2.8s ease-in-out infinite; }
+.animate-breathe { animation: breathe-kf 4s ease-in-out infinite; }
+.animate-shimmer {
+  background: linear-gradient(100deg, transparent 35%, rgba(245, 238, 218, 0.14) 50%, transparent 65%);
+  background-size: 200% 100%;
+  animation: shimmer-kf 5.5s linear infinite;
+}
+.animate-drop-in { animation: drop-in-kf 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-flicker-screen { animation: flicker-screen-kf 9s linear infinite; }
+.animate-page-flutter { animation: page-flutter-kf 8s ease-in-out infinite; }
+.animate-phone-glow { animation: phone-glow-kf 11s linear infinite; }
+.animate-date-pulse { animation: date-pulse-kf 3.5s ease-in-out infinite; }
+.animate-glitch { animation: glitch-kf 4.5s steps(1) infinite; }
+.animate-stamp { animation: stamp-kf 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-sway { animation: sway-kf 6s ease-in-out infinite; }
+.animate-lamp-breathe { animation: lamp-breathe-kf 6s ease-in-out infinite; }
+.animate-screen-cast { animation: screen-cast-kf 7s linear infinite; }
+.animate-intro-letter { animation: intro-letter-kf 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-player-pulse { animation: pulse-glow-kf 1.6s ease-in-out 2; }
+
+/* Kept for existing callers */
+.animate-fade-in { animation: blur-in-kf 0.6s ease both; }
+.animate-lamp { animation: lamp-flicker-kf 7s linear infinite; }
+@keyframes lamp-flicker-kf {
   0%, 100% { opacity: 1; }
   92% { opacity: 1; }
   93% { opacity: 0.82; }
   94% { opacity: 1; }
   97% { opacity: 0.9; }
 }
-.animate-fade-up { animation: fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
-.animate-fade-in { animation: fade-in 0.6s ease both; }
-.animate-lamp { animation: lamp-flicker 7s linear infinite; }
+
+/* Sound-wave bars (custom audio player) */
+@keyframes wave {
+  0%, 100% { height: 30%; }
+  50% { height: 100%; }
+}
+
+/* Golden rain (easter egg) */
+@keyframes golden-drop-kf {
+  0% { transform: translateY(-12px); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translateY(105vh); opacity: 0.2; }
+}

@@ -21,7 +21,7 @@ function Glyph({ id, className }: { id: string; className: string }) {
           {/* screen glow */}
           <div
             aria-hidden
-            className="absolute -inset-4 rounded-full bg-screen/20 blur-xl"
+            className="animate-screen-cast absolute -inset-4 rounded-full bg-screen/20 blur-xl"
           />
           <div className="relative mx-auto h-12 w-16 rounded-t-md border border-night-600 bg-night-950 p-1 shadow-[0_10px_25px_rgba(0,0,0,0.6)] sm:h-14 sm:w-20">
             <div className="h-full w-full rounded-sm bg-gradient-to-br from-screen/70 via-screen-dim/50 to-night-800">
@@ -41,7 +41,7 @@ function Glyph({ id, className }: { id: string; className: string }) {
     case "notebook":
       return (
         <div
-          className={`relative h-14 w-11 rounded-sm border border-paper-400/40 bg-paper-100 shadow-[0_8px_20px_rgba(0,0,0,0.55)] sm:h-16 sm:w-12 ${className}`}
+          className={`animate-page-flutter relative h-14 w-11 rounded-sm border border-paper-400/40 bg-paper-100 shadow-[0_8px_20px_rgba(0,0,0,0.55)] sm:h-16 sm:w-12 ${className}`}
           style={{ transform: "rotate(-2deg)" }}
         >
           <div aria-hidden className="absolute inset-x-0 top-0 flex justify-around">
@@ -61,7 +61,7 @@ function Glyph({ id, className }: { id: string; className: string }) {
 
     case "certificates":
       return (
-        <div className={`relative h-13 w-16 sm:h-15 sm:w-18 ${className}`}>
+        <div className={`animate-breathe relative h-13 w-16 sm:h-15 sm:w-18 ${className}`}>
           <div aria-hidden className="absolute bottom-0 left-0 h-10 w-14 rotate-[-5deg] rounded-sm border border-paper-400/50 bg-paper-300 shadow-md" />
           <div aria-hidden className="absolute bottom-0.5 left-1 h-10 w-14 rotate-[2deg] rounded-sm border border-paper-400/60 bg-paper-200 shadow-md" />
           <div className="absolute bottom-1 left-2 h-10 w-14 rotate-[-1deg] rounded-sm border border-museum-gold/50 bg-paper-50 p-1.5 shadow-lg">
@@ -123,10 +123,10 @@ function Glyph({ id, className }: { id: string; className: string }) {
               <span key={i} className="h-1 w-1 rounded-[1px] bg-night-800/30" />
             ))}
           </div>
-          <div aria-hidden className="absolute top-6 left-5 flex h-4 w-4 items-center justify-center rounded-full border-2 border-fail-red">
+          <div aria-hidden className="absolute top-6 left-5 flex h-4 w-4 items-center justify-center rounded-full border-2 border-fail-red animate-date-pulse">
             <span className="font-hand text-[0.55rem] leading-none text-fail-red">16</span>
           </div>
-          <div aria-hidden className="absolute -right-3 -bottom-2 w-12 rotate-[-8deg] rounded-sm bg-amber-glow px-1 py-0.5 text-center font-hand text-[0.6rem] leading-none text-night-900 shadow">
+          <div aria-hidden className="absolute -right-3 -bottom-2 w-12 rotate-[-8deg] rounded-sm bg-amber-glow px-1 py-0.5 text-center font-hand text-[0.6rem] leading-none text-night-900 shadow animate-sway">
             my year →
           </div>
         </div>
@@ -145,6 +145,8 @@ function Glyph({ id, className }: { id: string; className: string }) {
               <div className="mt-1 ml-1 h-0.5 w-4 rounded-full bg-amber-glow/40" />
             </div>
             <div aria-hidden className="absolute inset-x-1.5 top-1 h-0.5 rounded-full bg-night-700" />
+            {/* notification glow that occasionally lights up */}
+            <div aria-hidden className="animate-phone-glow absolute inset-0 rounded-md bg-screen/40" />
             {/* crack */}
             <svg aria-hidden className="absolute inset-0 h-full w-full" viewBox="0 0 32 64">
               <polyline

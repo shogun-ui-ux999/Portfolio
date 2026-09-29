@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { createRouteHandler } from "uploadthing/express";
 import { uploadRouter } from "./src/server/uploadthing";
+import { getMuseumAudioUrls } from "./src/server/museumAudio";
 
 /**
  * UploadThing route handler mounted on the dev/preview server.
@@ -36,11 +37,47 @@ function uploadthingDevPlugin(): Plugin {
       if (handler) {
         server.middlewares.use("/api/uploadthing", handler);
       }
+      // Same-origin JSON endpoint for the museum's audio guide URLs.
+      // The UploadThing token stays server-side; the client only ever
+      // sees the resulting public file URLs.
+      server.middlewares.use("/api/museum-audio", (req, res, _next) => {
+        if (req.method !== "GET") {
+          res.statusCode = 405;
+          res.end();
+          return;
+        }
+        getMuseumAudioUrls()
+          .then((urls) => {
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.setHeader("Cache-Control", "no-store");
+            res.end(JSON.stringify(urls));
+          })
+          .catch((error) => {
+            console.warn("[museum-audio] endpoint error:", error);
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({}));
+          });
+      });
     },
     configurePreviewServer(server) {
       if (handler) {
         server.middlewares.use("/api/uploadthing", handler);
       }
+      server.middlewares.use("/api/museum-audio", (_req, res) => {
+        getMuseumAudioUrls()
+          .then((urls) => {
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.setHeader("Cache-Control", "no-store");
+            res.end(JSON.stringify(urls));
+          })
+          .catch(() => {
+            res.statusCode = 200;
+            res.end(JSON.stringify({}));
+          });
+      });
     },
   };
 }
