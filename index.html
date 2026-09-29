@@ -8,31 +8,77 @@
       name="description"
       content="An interactive bedroom museum showcasing Anchit Aman's journey through AI, Biology, NEET, independent learning, failure, and relentless growth."
     />
+    <meta name="author" content="Anchit Aman" />
+    <meta name="theme-color" content="#15110d" />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="Anchit's Museum — A Self-Guided Tour of Work, Failure, and Curiosity" />
+    <meta property="og:title" content="Anchit's Museum" />
     <meta
       property="og:description"
-      content="An interactive bedroom museum showcasing Anchit Aman's journey through AI, Biology, NEET, independent learning, failure, and relentless growth."
+      content="A self-guided tour of my work, failures, curiosity, and the gap year that changed everything."
     />
     <meta property="og:type" content="website" />
-
-    <!-- Favicon: a small brass plaque with a lamp glow -->
-    <link
-      rel="icon"
-      type="image/svg+xml"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23171110'/%3E%3Crect x='6' y='7' width='20' height='18' rx='2' fill='none' stroke='%23e8a33d' stroke-width='2'/%3E%3Ccircle cx='16' cy='14' r='3.5' fill='%23f5c36b'/%3E%3Cpath d='M10 21h12' stroke='%23e8a33d' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Anchit's Museum" />
+    <meta
+      name="twitter:description"
+      content="A self-guided tour of my work, failures, curiosity, and the gap year that changed everything."
     />
 
+    <!-- Favicon: a tiny amber lamp glow -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2315110d'/%3E%3Ccircle cx='16' cy='14' r='7' fill='%23e8a33d'/%3E%3Ccircle cx='16' cy='14' r='10' fill='%23e8a33d' opacity='0.25'/%3E%3Crect x='14' y='20' width='4' height='6' rx='1.5' fill='%23a8874f'/%3E%3C/svg%3E"
+    />
+
+    <!-- Typography: editorial serif, clean sans, handwritten -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@300;400;500;600;700&family=Caveat:wght@400;500;600;700&family=Special+Elite&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Inter:wght@300..700&family=Caveat:wght@400..600&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Thematic loading state, removed when React mounts -->
+    <style>
+      #museum-boot {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.25rem;
+        background: #15110d;
+        color: #e9dfc8;
+        font-family: Georgia, "Times New Roman", serif;
+        letter-spacing: 0.08em;
+        z-index: 9999;
+      }
+      #museum-boot .lamp {
+        width: 10px;
+        height: 10px;
+        border-radius: 9999px;
+        background: #e8a33d;
+        box-shadow: 0 0 24px 8px rgba(232, 163, 61, 0.45);
+        animation: boot-pulse 1.6s ease-in-out infinite;
+      }
+      #museum-boot p {
+        font-size: 0.8rem;
+        opacity: 0.7;
+      }
+      @keyframes boot-pulse {
+        0%, 100% { opacity: 0.5; transform: scale(0.9); }
+        50% { opacity: 1; transform: scale(1.1); }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
+    <div id="museum-boot">
+      <div class="lamp"></div>
+      <p>Preparing the museum…</p>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

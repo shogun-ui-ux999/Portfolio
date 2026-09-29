@@ -1,471 +1,239 @@
 import { useEffect, useRef, useState } from "react";
-import type { Artifact, CertificateEvidence } from "../data/artifacts";
-import { evidenceLabelToCertificate, quickTourCaptions } from "../data/artifacts";
+import { useMuseum } from "../context/MuseumContext";
+import { getArtifact } from "../data/artifacts";
+import type { EvidenceDetail } from "../data/artifacts";
+import CertificateView from "./CertificateView";
 
-export interface TourInfo {
-  /** 0-based index of the current stop */
-  step: number;
-  total: number;
-  onBack: () => void;
-  onNext: () => void;
-  onSkip: () => void;
-}
-
-interface ArtifactModalProps {
-  artifact: Artifact | null;
-  onClose: () => void;
-  /** Present while the Quick Tour is driving the modal */
-  tour?: TourInfo | null;
-}
-
-/**
- * OVERLAY 1 — THE ARTIFACT MODAL
- * A high-end museum plaque: brass frame, engraved exhibit
- * number, story, lesson, audio-guide transcript, and evidence.
- * Closes on button, backdrop click, or Escape.
- */
-export default function ArtifactModal({
-  artifact,
-  onClose,
-  tour = null,
-}: ArtifactModalProps) {
+/** Elegant museum plaque overlay for a single artifact */
+export default function ArtifactModal() {
+  const { activeArtifactId, closeArtifact } = useMuseum();
+  const artifact = activeArtifactId ? getArtifact(activeArtifactId) : undefined;
+  const [transcriptOpen, setTranscriptOpen] = useState(false);
+  const [openCert, setOpenCert] = useState<EvidenceDetail | null>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
-  const [audioOpen, setAudioOpen] = useState(false);
-  const [openEvidence, setOpenEvidence] = useState<{
-    label: string;
-    cert: CertificateEvidence;
-  } | null>(null);
 
-  // Reset per-artifact UI state when the plaque changes.
+  // Reset panel state + focus the close button when a new artifact opens
   useEffect(() => {
-    setAudioOpen(false);
-    setOpenEvidence(null);
-  }, [artifact?.id]);
+    setTranscriptOpen(false);
+    setOpenCert(null);
+    if (activeArtifactId) {
+      const t = window.setTimeout(() => closeRef.current?.focus(), 50);
+      return () => window.clearTimeout(t);
+    }
+  }, [activeArtifactId]);
 
-  // Escape closes overlays first, then the plaque; while the
-  // tour is running Escape means "skip".
+  // Escape closes (evidence view first, then plaque)
   useEffect(() => {
-    if (!artifact) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      if (openEvidence) {
-        setOpenEvidence(null);
-        return;
+    if (!activeArtifactId) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (openCert) setOpenCert(null);
+        else if (transcriptOpen) setTranscriptOpen(false);
+        else closeArtifact();
       }
-      if (tour) tour.onSkip();
-      else onClose();
     };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [artifact, onClose, tour, openEvidence]);
-
-  // Lock page scroll and move focus into the dialog while open.
-  useEffect(() => {
-    if (!artifact) return;
-    const previousOverflow = document.body.style.overflow;
+    window.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
-    closeRef.current?.focus();
     return () => {
-      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
     };
-  }, [artifact]);
+  }, [activeArtifactId, closeArtifact, openCert, transcriptOpen]);
 
   if (!artifact) return null;
 
-  const isTour = Boolean(tour);
-
   return (
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-night-950/80 p-4 backdrop-blur-sm sm:p-6"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) onClose();
-      }}
-      data-testid="modal-backdrop"
-    >
-      {/* Brass frame → dark plaque face */}
+    <>
       <div
         role="dialog"
         aria-modal="true"
-        aria-labelledby="artifact-modal-title"
-        className="relative w-full max-w-2xl rounded-xl p-[3px] shadow-plaque"
-        style={{
-          background:
-            "linear-gradient(150deg, #f0c878 0%, #c9822a 30%, #7c5a22 55%, #d9b45b 100%)",
+        aria-label={`Exhibit plaque: ${artifact.title}`}
+        className="animate-fade-in fixed inset-0 z-[80] flex items-end justify-center overflow-y-auto bg-night-950/80 p-3 backdrop-blur-sm sm:items-center sm:p-6"
+        onClick={() => {
+          if (!openCert) closeArtifact();
         }}
-        onMouseDown={(event) => event.stopPropagation()}
       >
-        <div className="max-h-[85vh] overflow-y-auto rounded-[10px] bg-night-900 p-7 sm:p-10">
-          {/* Plaque header */}
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <p className="museum-eyebrow">{artifact.exhibitNumber}</p>
+        <div
+          className="animate-fade-up relative my-auto w-full max-w-2xl rounded-2xl border border-museum-gold/40 bg-night-800 shadow-[0_24px_80px_rgba(0,0,0,0.7)]"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Gold top rule */}
+          <div aria-hidden className="h-px w-full bg-gradient-to-r from-transparent via-museum-gold/60 to-transparent" />
+
+          <button
+            ref={closeRef}
+            type="button"
+            onClick={closeArtifact}
+            aria-label="Close exhibit plaque"
+            className="absolute top-3.5 right-3.5 flex h-9 w-9 items-center justify-center rounded-full border border-paper-400/25 text-paper-300 transition-all duration-300 hover:border-amber-glow/60 hover:text-amber-glow"
+          >
+            <span aria-hidden className="text-lg leading-none">×</span>
+          </button>
+
+          <div className="max-h-[82dvh] overflow-y-auto px-6 py-7 sm:px-10 sm:py-9">
+            {/* Exhibit number + badges */}
+            <div className="mb-3 flex flex-wrap items-center gap-2.5">
+              <span className="museum-label text-[0.6rem] text-museum-gold">
+                {artifact.exhibitNumber}
+              </span>
               {artifact.isFailure && (
-                <span className="rounded-full border border-brick-400/50 bg-brick-400/10 px-2.5 py-0.5 font-type text-[0.55rem] uppercase tracking-[0.2em] text-brick-400">
+                <span className="museum-label rounded-sm border border-fail-red/50 bg-fail-red/10 px-2 py-1 text-[0.55rem] text-fail-red">
                   Failure Exhibit
                 </span>
               )}
               {artifact.isSecret && (
-                <span className="rounded-full border border-gold-400/50 bg-gold-400/10 px-2.5 py-0.5 font-type text-[0.55rem] uppercase tracking-[0.2em] text-gold-400">
-                  Curator&rsquo;s Private Item
+                <span className="museum-label rounded-sm border border-museum-gold/50 bg-museum-gold/10 px-2 py-1 text-[0.55rem] text-museum-gold">
+                  Curator's Private Item
                 </span>
               )}
             </div>
-            <button
-              ref={closeRef}
-              type="button"
-              onClick={onClose}
-              aria-label="Close artifact plaque"
-              className="-mt-1 -mr-1 rounded-full border border-paper-400/25 p-2 text-paper-300 transition-colors hover:border-amber-lamp/60 hover:text-amber-glow"
-            >
-              <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-                <path d="M6 6l12 12M18 6L6 18" />
-              </svg>
-            </button>
-          </div>
 
-          <h2
-            id="artifact-modal-title"
-            className="mt-3 font-serif text-3xl font-semibold leading-tight text-paper-50 sm:text-4xl"
-          >
-            {artifact.title}
-          </h2>
-          <p className="mt-2 text-sm italic text-paper-300">
-            {artifact.objectName}
-          </p>
-
-          <div className="gold-rule mt-6 mx-0" aria-hidden />
-
-          {/* Story */}
-          <p className="mt-6 museum-eyebrow">The Story</p>
-          <p className="mt-3 leading-relaxed text-paper-200">
-            {artifact.story}
-          </p>
-
-          {/* Audio Guide transcript */}
-          {artifact.audioGuideScript && (
-            <div className="mt-8">
-              <button
-                type="button"
-                onClick={() => setAudioOpen((open) => !open)}
-                aria-expanded={audioOpen}
-                aria-controls={`audio-guide-${artifact.id}`}
-                className="inline-flex items-center gap-2 rounded-md border border-screen-400/40 bg-screen-500/10 px-4 py-2 text-sm font-medium text-screen-300 transition-colors hover:border-screen-300 hover:bg-screen-500/20"
-              >
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 3v10.5" />
-                  <path d="M8 11.5a4 4 0 0 0 8 0" />
-                  <path d="M12 17.5V21" />
-                  <path d="M9 21h6" />
-                  <path d="M4.5 11.5H5M19 11.5h.5" />
-                </svg>
-                Audio Guide
-                <svg
-                  viewBox="0 0 24 24"
-                  className={`h-3.5 w-3.5 transition-transform ${audioOpen ? "rotate-180" : ""}`}
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
-              </button>
-              {audioOpen && (
-                <div
-                  id={`audio-guide-${artifact.id}`}
-                  data-testid="audio-guide-transcript"
-                  className="mt-3 rounded-lg border border-screen-400/25 bg-night-850/70 p-5"
-                >
-                  <p className="font-type text-[0.6rem] uppercase tracking-[0.3em] text-screen-300/90">
-                    Audio Guide Transcript
-                  </p>
-                  <p className="mt-3 text-sm italic leading-relaxed text-paper-200/90">
-                    &ldquo;{artifact.audioGuideScript}&rdquo;
-                  </p>
-                  <p className="mt-3 font-type text-[0.55rem] uppercase tracking-[0.25em] text-paper-400/70">
-                    Voice recording coming soon.
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Lesson — engraved takeaway */}
-          <div className="mt-8 rounded-lg border border-amber-lamp/30 bg-amber-lamp/5 p-5">
-            <p className="museum-eyebrow">The Lesson</p>
-            <p className="mt-2 font-serif text-lg italic leading-snug text-amber-glow">
-              {artifact.lesson}
+            {/* Title + object name */}
+            <h2 className="font-serif text-3xl leading-tight text-paper-50 sm:text-4xl">
+              {artifact.title}
+            </h2>
+            <p className="mt-2 font-hand text-xl text-amber-glow/90">
+              {artifact.objectName}
             </p>
-          </div>
 
-          {/* Evidence links */}
-          {artifact.evidenceLinks.length > 0 && (
-            <div className="mt-8">
-              <p className="museum-eyebrow">Evidence</p>
-              <ul className="mt-3 flex flex-wrap gap-3">
-                {artifact.evidenceLinks.map((link) => {
-                  const cert = evidenceLabelToCertificate[link.label];
-                  const openCert = () =>
-                    cert && setOpenEvidence({ label: link.label, cert });
+            <div aria-hidden className="my-5 h-px bg-paper-400/15" />
 
-                  if (link.verified && cert) {
-                    return (
-                      <li key={link.label}>
-                        <button
-                          type="button"
-                          onClick={openCert}
-                          className="inline-flex flex-wrap items-center gap-2 rounded-md border border-screen-400/40 bg-screen-500/10 px-4 py-2 text-sm font-medium text-screen-300 transition-colors hover:border-screen-300 hover:bg-screen-500/20"
-                        >
-                          {link.label}
-                          <span
-                            data-testid="verified-badge"
-                            className="inline-flex items-center gap-1 rounded-full border border-gold-400/60 bg-gold-400/15 px-1.5 py-0.5 font-type text-[0.5rem] uppercase tracking-[0.15em] text-gold-400"
-                          >
-                            <svg viewBox="0 0 24 24" className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M4 12.5l5 5L20 6.5" />
-                            </svg>
-                            Verified
-                          </span>
-                        </button>
-                      </li>
-                    );
-                  }
+            {/* Story */}
+            <p className="max-w-prose text-[0.95rem] leading-relaxed text-paper-200/90">
+              {artifact.story}
+            </p>
 
-                  return (
-                    <li key={link.label}>
-                      <a
-                        href={link.url || undefined}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-md border border-screen-400/40 bg-screen-500/10 px-4 py-2 text-sm font-medium text-screen-300 transition-colors hover:border-screen-300 hover:bg-screen-500/20"
-                      >
-                        {link.label}
-                        <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M7 17L17 7M9 7h8v8" />
-                        </svg>
-                      </a>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          )}
+            {/* Lesson block */}
+            <blockquote className="mt-6 rounded-lg border-l-2 border-amber-glow/70 bg-amber-glow/5 px-5 py-4">
+              <span className="museum-label block text-[0.55rem] text-amber-glow/80">Lesson</span>
+              <p className="mt-1.5 font-serif text-lg leading-snug text-paper-100 italic">
+                {artifact.lesson}
+              </p>
+            </blockquote>
 
-          {/* Footer: tour controls or simple close */}
-          <div className="mt-10 flex flex-col items-center gap-4 border-t border-paper-400/10 pt-6 sm:flex-row sm:justify-between">
-            {isTour && tour ? (
-              <>
-                <div
-                  className="flex flex-col gap-2"
-                  aria-label={`Tour stop ${tour.step + 1} of ${tour.total}`}
+            {/* Evidence links */}
+            {artifact.evidenceLinks && artifact.evidenceLinks.length > 0 && (
+              <div className="mt-6 flex flex-wrap gap-3">
+                {artifact.evidenceLinks.map((l) => (
+                  <a
+                    key={l.url}
+                    href={l.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="museum-label inline-flex items-center gap-2 rounded-full border border-museum-gold/40 px-4 py-2.5 text-[0.6rem] text-museum-gold transition-all duration-300 hover:border-museum-gold hover:bg-museum-gold/10"
+                  >
+                    {l.label}
+                    <span aria-hidden>↗</span>
+                  </a>
+                ))}
+              </div>
+            )}
+
+            {/* Evidence detail cards (certificates etc.) */}
+            {artifact.evidenceDetails && (
+              <div className="mt-7">
+                <span className="museum-label text-[0.55rem] text-paper-300/60">
+                  Evidence
+                </span>
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  {artifact.evidenceDetails.map((d) => (
+                    <EvidenceCard key={d.label} detail={d} onOpen={() => setOpenCert(d)} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Audio guide */}
+            {artifact.audioGuideScript && (
+              <div className="mt-7">
+                <button
+                  type="button"
+                  onClick={() => setTranscriptOpen((v) => !v)}
+                  aria-expanded={transcriptOpen}
+                  className="museum-label inline-flex items-center gap-2.5 rounded-full border border-screen/40 px-4 py-2.5 text-[0.6rem] text-screen transition-all duration-300 hover:border-screen hover:bg-screen/10"
                 >
-                  <div className="flex items-center gap-2">
-                    {Array.from({ length: tour.total }, (_, index) => (
-                      <span
-                        key={index}
-                        aria-hidden
-                        className={`h-1.5 rounded-full transition-all duration-300 ${
-                          index === tour.step
-                            ? "w-6 bg-amber-lamp"
-                            : "w-1.5 bg-paper-400/40"
-                        }`}
-                      />
-                    ))}
-                    <span className="ml-2 font-type text-[0.6rem] uppercase tracking-[0.25em] text-paper-300">
-                      Quick Tour — {tour.step + 1}/{tour.total}
+                  <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-screen shadow-[0_0_8px_rgba(127,180,217,0.8)]" />
+                  {transcriptOpen ? "Hide Audio Guide" : "Audio Guide"}
+                </button>
+                {transcriptOpen && (
+                  <div className="animate-fade-up mt-3 rounded-lg border border-screen/25 bg-screen/5 px-5 py-4">
+                    <span className="museum-label block text-[0.55rem] text-screen/80">
+                      Audio Guide Transcript
                     </span>
+                    <p className="mt-2 font-serif text-[1.05rem] leading-relaxed text-paper-100/90 italic">
+                      "{artifact.audioGuideScript}"
+                    </p>
+                    <p className="mt-2.5 text-xs text-paper-300/50">
+                      Voice recording coming soon.
+                    </p>
                   </div>
-                  <p className="font-hand text-xl leading-none text-amber-glow">
-                    {quickTourCaptions[artifact.id] ?? ""}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={tour.onBack}
-                    disabled={tour.step === 0}
-                    className="btn-ghost !px-4 !py-2 text-xs disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    Back
-                  </button>
-                  <button
-                    type="button"
-                    onClick={tour.onNext}
-                    className="btn-lamp !px-5 !py-2 text-xs"
-                  >
-                    Next
-                  </button>
-                  <button
-                    type="button"
-                    onClick={tour.onSkip}
-                    className="btn-ghost !px-4 !py-2 text-xs"
-                  >
-                    Skip
-                  </button>
-                </div>
-              </>
-            ) : (
-              <button type="button" onClick={onClose} className="btn-ghost !px-5 !py-2 text-xs">
-                Close
-              </button>
+                )}
+              </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* OVERLAY 2 — CERTIFICATE EVIDENCE VIEW */}
-      {openEvidence && (
-        <CertificateEvidenceView
-          label={openEvidence.label}
-          cert={openEvidence.cert}
-          onBack={() => setOpenEvidence(null)}
-        />
+      {/* Certificate Evidence View (nested above plaque) */}
+      {openCert && (
+        <CertificateView detail={openCert} onClose={() => setOpenCert(null)} />
       )}
-    </div>
+    </>
   );
 }
 
-/**
- * A faithful, CSS-drawn rendering of the official certificate:
- * ornate frame, serif recipient name, course, completion date,
- * issuer, standards, signatories, and a "Verified Evidence"
- * stamp.
- */
-function CertificateEvidenceView({
-  label,
-  cert,
-  onBack,
+/** Museum-style evidence card for structured certificate data */
+function EvidenceCard({
+  detail,
+  onOpen,
 }: {
-  label: string;
-  cert: CertificateEvidence;
-  onBack: () => void;
+  detail: EvidenceDetail;
+  onOpen: () => void;
 }) {
-  return (
-    <div
-      className="fixed inset-0 z-[120] flex items-center justify-center bg-night-950/90 p-4 backdrop-blur-sm sm:p-6"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) onBack();
-      }}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="certificate-view-title"
-    >
-      <div className="relative w-full max-w-2xl">
-        <div
-          className="max-h-[88vh] overflow-y-auto rounded-lg p-[3px]"
-          style={{
-            background:
-              "linear-gradient(150deg, #f0c878 0%, #c9822a 30%, #7c5a22 55%, #d9b45b 100%)",
-          }}
-        >
-          <div
-            className="relative rounded-[5px] px-6 py-10 text-center sm:px-12"
-            style={{
-              background:
-                "linear-gradient(165deg, #faf4e4 0%, #f4ecdc 55%, #ecdfc6 100%)",
-            }}
-          >
-            {/* Inner frame border */}
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-2.5 rounded-[3px] border-2 border-[#b98a2e]/50"
-            />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-4 rounded-[2px] border border-[#b98a2e]/30"
-            />
+  const hasCertView = Boolean(detail.certificate);
 
-            <p className="museum-eyebrow !text-[#8a6a1f]">
-              {cert.kind === "certificate" ? "Certificate of Completion" : "Certificate of Participation"}
-            </p>
-            <p className="mt-6 font-serif text-xs uppercase tracking-[0.35em] text-[#6b5320]">
-              This certifies that
-            </p>
-            <h2
-              id="certificate-view-title"
-              data-testid="certificate-recipient"
-              className="mt-2 font-serif text-4xl font-semibold text-[#2c2313] sm:text-5xl"
-            >
-              {cert.recipient}
-            </h2>
-            <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-[#4a3b20]">
-              has successfully completed
-            </p>
-            <p className="mx-auto mt-1 max-w-lg font-serif text-xl font-semibold leading-snug text-[#2c2313] sm:text-2xl">
-              {cert.course}
-            </p>
-
-            <p className="mt-4 font-type text-[0.65rem] uppercase tracking-[0.3em] text-[#6b5320]">
-              Completed {cert.completionDate}
-            </p>
-
-            {cert.tagline && (
-              <p className="mt-4 font-serif text-sm italic text-[#6b5320]">
-                &ldquo;{cert.tagline}&rdquo;
-              </p>
-            )}
-
-            {cert.standards && cert.standards.length > 0 && (
-              <ul className="mx-auto mt-5 max-w-md space-y-1.5">
-                {cert.standards.map((standard) => (
-                  <li key={standard} className="text-xs leading-relaxed text-[#4a3b20]">
-                    — {standard} —
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            {/* Signatories + Verified Evidence stamp */}
-            <div className="mt-9 flex flex-col items-center justify-between gap-7 sm:flex-row sm:items-end">
-              <div className="flex flex-1 flex-wrap items-end justify-center gap-7 sm:justify-start">
-                {cert.signatories.map((signatory) => (
-                  <div key={signatory.name} className="min-w-[10rem] text-center">
-                    <p className="font-hand text-2xl leading-none text-[#2c2313]">
-                      {signatory.name}
-                    </p>
-                    <div className="mt-1 h-px w-full bg-[#8a6a1f]/40" aria-hidden />
-                    <p className="mt-1.5 text-[0.65rem] uppercase tracking-[0.15em] text-[#6b5320]">
-                      {signatory.role}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              {/* The stamp — rotated seal */}
-              <div
-                data-testid="verified-evidence-stamp"
-                className="flex h-24 w-24 shrink-0 rotate-6 flex-col items-center justify-center rounded-full border-[3px] border-gold-600/70 text-gold-600"
-                style={{ color: "#9a7a2e", borderColor: "rgba(154, 122, 46, 0.7)" }}
-              >
-                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 12.5l5 5L20 6.5" />
-                </svg>
-                <p className="mt-1 text-center font-type text-[0.5rem] font-bold uppercase leading-tight tracking-[0.12em]">
-                  Verified
-                  <br />
-                  Evidence
-                </p>
-              </div>
-            </div>
-
-            <p className="mt-8 text-[0.65rem] uppercase tracking-[0.25em] text-[#6b5320]/80">
-              {cert.issuer}
-            </p>
-            <p className="mt-1 font-type text-[0.55rem] uppercase tracking-[0.25em] text-[#6b5320]/60">
-              Museum exhibit copy — original on file with the curator ({label})
-            </p>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={onBack}
-          className="btn-ghost mt-4 !px-5 !py-2 text-xs"
-        >
-          ← Back to the plaque
-        </button>
+  const inner = (
+    <>
+      <div className="flex items-start justify-between gap-2">
+        <p className="font-serif text-[1.05rem] text-paper-50">{detail.label}</p>
+        {hasCertView && (
+          <span className="museum-label shrink-0 rounded-sm border border-museum-gold/40 bg-museum-gold/10 px-1.5 py-0.5 text-[0.5rem] text-museum-gold">
+            Verified
+          </span>
+        )}
       </div>
-    </div>
+      {detail.description && (
+        <p className="mt-1 text-xs leading-relaxed text-paper-200/75">{detail.description}</p>
+      )}
+      {detail.issuer && (
+        <p className="mt-1.5 text-xs text-paper-300/60">{detail.issuer}</p>
+      )}
+      {detail.completionDate && (
+        <p className="museum-label mt-2 text-[0.55rem] text-paper-300/60">
+          Completed {detail.completionDate}
+        </p>
+      )}
+      {detail.status && (
+        <p className="font-hand mt-1.5 text-base text-paper-300/60 italic">{detail.status}</p>
+      )}
+    </>
+  );
+
+  if (hasCertView) {
+    return (
+      <button
+        type="button"
+        onClick={onOpen}
+        className="rounded-xl border border-paper-400/20 bg-night-700/40 p-4 text-left transition-all duration-300 hover:border-museum-gold/50 hover:bg-night-700/70"
+      >
+        {inner}
+        <span className="museum-label mt-3 block text-[0.5rem] text-museum-gold/80">
+          View Certificate →
+        </span>
+      </button>
+    );
+  }
+  return (
+    <div className="rounded-xl border border-paper-400/15 bg-night-700/25 p-4">{inner}</div>
   );
 }

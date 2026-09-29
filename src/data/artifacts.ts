@@ -1,84 +1,63 @@
-/**
- * ============================================================
- *  ANCHIT'S MUSEUM — MASTER ARTIFACT DATA
- * ============================================================
- *  Every story, label, and link on the site is driven by this
- *  file. To edit the museum's content, change the entries below
- *  — the UI maps over this data and never hardcodes stories.
- *
- *  `position` tells the interactive bedroom (Prompt 2) where
- *  each object physically sits in the room.
- * ============================================================
- */
+/*
+  ── MASTER ARTIFACT DATA ────────────────────────────────────
+  Every story, lesson, and label on the site is driven by this
+  file. Edit text here — the UI maps over it automatically.
+*/
 
 export type ArtifactCategory =
   | "Curiosity"
   | "Leadership"
   | "Failure"
   | "Identity"
-  | "Future"
-  | "Achievement";
-
-export type RoomPosition =
-  | "desk"
-  | "shelf"
-  | "wall"
-  | "floor"
-  | "nightstand"
-  | "drawer"
-  | "failure-wing";
+  | "Achievement"
+  | "Future";
 
 export interface EvidenceLink {
   label: string;
   url: string;
-  /** true → renders a "Verified" badge and the official-certificate overlay */
-  verified?: boolean;
 }
 
-/**
- * Structured fields for official certificates — the Certificate
- * Evidence View renders these like the physical document.
- */
-export interface CertificateEvidence {
-  kind: "certificate" | "participation";
-  recipient: string;
-  course: string;
-  /** e.g. "August 28, 2026" or "August 2026" */
-  completionDate: string;
-  issuer: string;
-  tagline?: string;
-  standards?: string[];
-  signatories: Array<{ name: string; role: string }>;
+export interface EvidenceDetail {
+  label: string;
+  description?: string;
+  issuer?: string;
+  completionDate?: string;
+  standards?: string;
+  certifiedBy?: string;
+  status?: string;
+  /** Optional structured data for the Certificate Evidence View */
+  certificate?: {
+    title: string;
+    name: string;
+    course: string;
+    completionDate: string;
+    issuer: string;
+    standards: string;
+    certifiedBy: string;
+  };
 }
 
 export interface Artifact {
-  /** Stable id used for routing, keys, and viewed-state tracking */
   id: string;
-  /** Plaque label, e.g. "Exhibit 01" or "Failure 02" */
   exhibitNumber: string;
-  /** Museum plaque title */
   title: string;
-  /** What the visitor physically sees in the room */
   objectName: string;
   category: ArtifactCategory;
   story: string;
   lesson: string;
-  evidenceLinks: EvidenceLink[];
-  /** Verbatim narration for the Audio Guide panel (coming soon) */
+  /** One-line summary for the List View */
+  shortLabel?: string;
+  evidenceLinks?: EvidenceLink[];
+  evidenceDetails?: EvidenceDetail[];
   audioGuideScript?: string;
-  /** Where it sits in the bedroom scene */
-  position: RoomPosition;
-  /** true → displayed in the Museum of Failures */
+  /** Visual-only: where the object sits in the room */
+  position: "desk" | "shelf" | "wall" | "floor" | "nightstand" | "drawer" | "failure-wing";
   isFailure: boolean;
-  /** true → hidden until discovered (e.g. drawer letter) */
   isSecret: boolean;
 }
 
-/* ============================================================
- *  THE BEDROOM — 9 ARTIFACTS
- * ============================================================ */
-
-export const bedroomArtifacts: Artifact[] = [
+export const artifacts: Artifact[] = [
+  // ── BEDROOM ARTIFACTS ────────────────────────────────────
   {
     id: "laptop",
     exhibitNumber: "Exhibit 01",
@@ -89,11 +68,10 @@ export const bedroomArtifacts: Artifact[] = [
       "This is where I taught myself AI and programming from scratch. While others were sleeping, I was taking Google and NVIDIA courses, interning at an AI startup, and building the backend for my neighborhood running club. It represents my belief that if you want to learn something, the internet is your classroom and the code is your exam.",
     lesson:
       "You don't need permission to become an expert; you just need Wi-Fi and stubbornness.",
-    evidenceLinks: [
-      { label: "Visit Run Club Site", url: "https://rushranchi.vercel.app/" },
-    ],
+    shortLabel: "Where I taught myself AI and programming, late at night, with no mentor.",
+    evidenceLinks: [{ label: "Visit Run Club Site", url: "https://rushranchi.vercel.app/" }],
     audioGuideScript:
-      "You've found the brightest spot in the room. This is where I taught myself AI and programming — no classroom, no permission slip. While others were asleep, I was inside Google and NVIDIA courses, interning at an AI startup, and building the backend for my running club. If you want to learn something, the internet is your classroom, and the code is your exam.",
+      "This laptop is where I taught myself AI and programming. I did not wait for a class or a mentor. I used free courses, late nights, and a lot of broken code. It represents my belief that if you want to learn something, you can start tonight.",
     position: "desk",
     isFailure: false,
     isSecret: false,
@@ -108,7 +86,7 @@ export const bedroomArtifacts: Artifact[] = [
       "This is where my two obsessions collide: Artificial Intelligence and Biology. I use it to map out how machine learning can solve healthcare problems. It's full of crossed-out code, biological diagrams, and plans for my next move.",
     lesson:
       "The most groundbreaking ideas live at the intersection of two completely different fields.",
-    evidenceLinks: [],
+    shortLabel: "Where AI and Biology collide — my plans for healthcare's future.",
     position: "desk",
     isFailure: false,
     isSecret: false,
@@ -123,30 +101,63 @@ export const bedroomArtifacts: Artifact[] = [
       "I qualified for NEET, India's national medical entrance examination, twice consecutively while preparing independently. But I did not stop at theory. Before entering college, I completed Advanced Cardiac Life Support (ACLS) and Basic Life Support (BLS) through SaveaLife.com, empowered by Advanced Medical Certification. Both courses adhere to the latest ILCOR Standards and Guidelines and are Joint Commission (JCAHO) compliant. Alongside these, I earned technology certificates from Google, Cisco, NVIDIA, MoES, and Aarogya Setu 2.0.",
     lesson:
       "True education isn't just about the degree you're chasing; it's about the skills you gather along the way.",
-    evidenceLinks: [
+    shortLabel: "NEET twice, plus ACLS, BLS, and tech certificates earned independently.",
+    evidenceDetails: [
       {
-        label: "Advanced Cardiac Life Support (ACLS)",
-        url: "",
-        verified: true,
+        label: "ACLS Certificate",
+        description: "Advanced Cardiac Life Support Course",
+        issuer: "SaveaLife.com, empowered by Advanced Medical Certification",
+        completionDate: "08/28/2026",
+        standards:
+          "Latest ILCOR Standards and Guidelines, Joint Commission (JCAHO) compliant",
+        certifiedBy: "Karl F. Disque D.O. RPh",
+        certificate: {
+          title: "CERTIFICATE OF COMPLETION",
+          name: "Anchit Aman",
+          course: "Advanced Cardiac Life Support Course",
+          completionDate: "08/28/2026",
+          issuer: "SaveaLife.com, empowered by Advanced Medical Certification",
+          standards:
+            "This certificate certifies that the individual listed above has successfully completed the Advanced Cardiac Life Support (ACLS) Course in accordance with the curriculum of SaveaLife.com, empowered by Advanced Medical Certification, and adheres to the latest ILCOR Standards and Guidelines and is Joint Commission (JCAHO) compliant.",
+          certifiedBy: "Karl F. Disque D.O. RPh",
+        },
       },
       {
-        label: "Basic Life Support (BLS)",
-        url: "",
-        verified: true,
+        label: "BLS Certificate",
+        description: "Basic Life Support Course",
+        issuer: "SaveaLife.com, empowered by Advanced Medical Certification",
+        completionDate: "08/27/2026",
+        standards:
+          "Latest ILCOR Standards and Guidelines, Joint Commission (JCAHO) compliant",
+        certifiedBy: "Karl F. Disque D.O. RPh",
+        certificate: {
+          title: "CERTIFICATE OF COMPLETION",
+          name: "Anchit Aman",
+          course: "Basic Life Support Course",
+          completionDate: "08/27/2026",
+          issuer: "SaveaLife.com, empowered by Advanced Medical Certification",
+          standards:
+            "This certificate certifies that the individual listed above has successfully completed the Basic Life Support (BLS) Course in accordance with the curriculum of SaveaLife.com, empowered by Advanced Medical Certification, and adheres to the latest ILCOR Standards and Guidelines and is Joint Commission (JCAHO) compliant.",
+          certifiedBy: "Karl F. Disque D.O. RPh",
+        },
       },
       {
-        label: "MoES Foundation Day Quiz 2026 — Participation",
-        url: "",
-        verified: true,
+        label: "MoES Foundation Day Quiz",
+        description:
+          "Participation certificate for MoES Foundation Day Quiz: Advancing Earth and Empowering the Nation",
+        issuer: "Ministry of Earth Sciences",
+        status: "Will upload later",
       },
       {
-        label: "Aarogya Setu 2.0 Quiz — Participation",
-        url: "",
-        verified: true,
+        label: "Aarogya Setu 2.0 Quiz",
+        description:
+          "Participation certificate for Aarogya Setu 2.0 Quiz: Contributing to SDG Propote Awareness of Digital Health",
+        issuer: "Ministry of Health and Family Welfare",
+        status: "Will upload later",
       },
     ],
     audioGuideScript:
-      "Look up at the shelf — those aren't participation trophies. I qualified for NEET, India's national medical entrance examination, twice, while preparing on my own. But I didn't stop at theory. Before college even began, I completed Advanced Cardiac Life Support and Basic Life Support — actual emergency-medicine training, ILCOR standards, JCAHO compliant. Alongside those, technology certificates from Google, Cisco, NVIDIA, MoES, and Aarogya Setu 2.0. When I say I taught myself, this shelf is the receipt.",
+      "These certificates are proof that I did not wait for permission. I qualified for NEET twice, and before college I completed ACLS and BLS certification. They show that I want to be ready before opportunity arrives.",
     position: "shelf",
     isFailure: false,
     isSecret: false,
@@ -161,9 +172,9 @@ export const bedroomArtifacts: Artifact[] = [
       "When I first started coding on my own, I had no mentor. Every time I ran my code, it broke. I spent weeks staring at syntax errors, missing semicolons, and logic flaws. This broken build represents the frustrating, unglamorous reality of self-teaching.",
     lesson:
       "Mastery is just the accumulation of thousands of failures that you refused to quit.",
-    evidenceLinks: [],
+    shortLabel: "Weeks of red error text — the unglamorous reality of self-teaching.",
     audioGuideScript:
-      "Careful — this one isn't beautiful. When I started coding alone, everything broke. Weeks of syntax errors, missing semicolons, logic flaws, no mentor to ask. Frame it however you like, it's still a wall of red. But this is what the start of mastery actually looks like: thousands of small failures that you simply refused to quit.",
+      "These red errors are not embarrassing to me anymore. They are evidence of the first version of myself that refused to quit. Every error taught me patience, logic, and humility.",
     position: "wall",
     isFailure: true,
     isSecret: false,
@@ -178,7 +189,7 @@ export const bedroomArtifacts: Artifact[] = [
       "I play chess to train my patience, but I also coded my own functional chess game from scratch. Building the game mechanics taught me how to translate human strategy into machine logic.",
     lesson:
       "Strategy in life, like in chess, requires you to think three moves ahead and sacrifice the present for the future.",
-    evidenceLinks: [],
+    shortLabel: "I play chess — and I coded my own chess game from scratch.",
     position: "floor",
     isFailure: false,
     isSecret: false,
@@ -191,9 +202,8 @@ export const bedroomArtifacts: Artifact[] = [
     category: "Identity",
     story:
       "I finished Grade 12 at age 16, but I was too young for college admission. Instead of waiting, I took a gap year. I used it to qualify for NEET, build community food initiatives, and intern at an AI startup. This object represents my refusal to let a timeline dictate my ambition.",
-    lesson:
-      "Time is not something you wait for; it is something you build with.",
-    evidenceLinks: [],
+    lesson: "Time is not something you wait for; it is something you build with.",
+    shortLabel: "Finished school at 16 — turned the wait into a laboratory.",
     position: "wall",
     isFailure: false,
     isSecret: false,
@@ -206,9 +216,8 @@ export const bedroomArtifacts: Artifact[] = [
     category: "Leadership",
     story:
       "This phone is my command center. I used it to cold-call local bakeries to secure food sponsorships for my community initiative (feeding 200+ people). I use it to track my 5-7km runs for the neighborhood club I founded, and to tutor Class 10 biology students.",
-    lesson:
-      "A tool is only as valuable as the action it triggers in the real world.",
-    evidenceLinks: [],
+    lesson: "A tool is only as valuable as the action it triggers in the real world.",
+    shortLabel: "Cold calls, run tracking, biology tutoring — my command center.",
     position: "nightstand",
     isFailure: false,
     isSecret: false,
@@ -223,9 +232,9 @@ export const bedroomArtifacts: Artifact[] = [
       "Hidden in my desk is a letter I wrote to myself as a kid. It says: 'I will achieve all my dreams and be the best man ever.' I keep it hidden because it's deeply personal, but I look at it whenever my ego tells me to give up. It is the anchor for my relentless attitude.",
     lesson:
       "The person you promised you'd become as a child is still waiting for you to show up.",
-    evidenceLinks: [],
+    shortLabel: "A childhood letter I hide in my desk and read when I want to quit.",
     audioGuideScript:
-      "You found the drawer. Most visitors walk right past it. Hidden here is a letter I wrote to myself as a kid — it says: 'I will achieve all my dreams and be the best man ever.' I keep it hidden because it's deeply personal. But whenever my ego tells me to give up, I read it again. The child who wrote that is still waiting for me to show up.",
+      "This letter was written by me as a kid. It says I will achieve my dreams and become the best man I can be. I keep it hidden because it is personal, but it is also the reason I keep going.",
     position: "drawer",
     isFailure: false,
     isSecret: true,
@@ -238,22 +247,16 @@ export const bedroomArtifacts: Artifact[] = [
     category: "Identity",
     story:
       "This bracelet represents the distractions I had to quit and the sacrifices I made during my gap year. While others were enjoying a normal teenage life, I was grinding through NEET prep, coding, and community work. It's a physical reminder of the discipline it takes to walk your own path.",
-    lesson:
-      "Every 'yes' to a dream requires a thousand silent 'no's' to distractions.",
-    evidenceLinks: [],
+    lesson: "Every 'yes' to a dream requires a thousand silent 'no's' to distractions.",
+    shortLabel: "A quiet reminder of every distraction I gave up for the path I chose.",
     audioGuideScript:
-      "One last thing before you leave the room. This plain, worn bracelet stands for every distraction I quit and every normal teenage evening I gave up during the gap year — while others were out, I was grinding through NEET prep, code, and community work. Every 'yes' to a dream requires a thousand silent 'no's to distractions. This is what they look like, woven together.",
+      "This bracelet represents the quiet sacrifices. The distractions I had to leave behind, the normal teenage comfort I delayed, and the discipline it took to build my own path.",
     position: "desk",
     isFailure: false,
     isSecret: true,
   },
-];
 
-/* ============================================================
- *  THE MUSEUM OF FAILURES — 3 ARTIFACTS
- * ============================================================ */
-
-export const failureArtifacts: Artifact[] = [
+  // ── FAILURE WING ─────────────────────────────────────────
   {
     id: "fail-rebellious",
     exhibitNumber: "Failure 01",
@@ -263,7 +266,7 @@ export const failureArtifacts: Artifact[] = [
     story:
       "I was never the most obedient child in class or at coaching centers. I questioned the rote-learning system and often chose to self-study or build projects instead of just following instructions. It caused friction, but it forged my independent mindset.",
     lesson: "Obedience builds followers; curiosity builds founders.",
-    evidenceLinks: [],
+    shortLabel: "I questioned rote-learning and paid for it in friction — and independence.",
     position: "failure-wing",
     isFailure: true,
     isSecret: false,
@@ -276,9 +279,8 @@ export const failureArtifacts: Artifact[] = [
     category: "Failure",
     story:
       "I tried to build my ultimate 'dream app' early on. I had the vision, but my technical skills and project management weren't there yet. It failed, and I had to abandon it. It was a harsh lesson in the gap between ambition and execution.",
-    lesson:
-      "A brilliant idea is worthless without the disciplined execution to back it up.",
-    evidenceLinks: [],
+    lesson: "A brilliant idea is worthless without the disciplined execution to back it up.",
+    shortLabel: "My dream app died young — ambition without execution.",
     position: "failure-wing",
     isFailure: true,
     isSecret: false,
@@ -291,120 +293,81 @@ export const failureArtifacts: Artifact[] = [
     category: "Failure",
     story:
       "My biggest ongoing failure is fighting distractions. Because I am curious about AI, biology, coding, and community work, I often spread myself too thin. I haven't fully mastered the art of focus, and my screen-time report is a daily reminder of the battle against digital noise.",
-    lesson:
-      "Self-awareness is the first step to self-mastery. I am still fighting this battle every day.",
-    evidenceLinks: [],
+    lesson: "Self-awareness is the first step to self-mastery. I am still fighting this battle every day.",
+    shortLabel: "Nine hours of screen time — the battle for focus I fight daily.",
     position: "failure-wing",
     isFailure: true,
     isSecret: false,
   },
 ];
 
-/* ============================================================
- *  LOOKUPS
- * ============================================================ */
+/* ── DERIVED VIEWS ──────────────────────────────────────── */
 
-/** Every artifact in the museum, bedroom first */
-export const allArtifacts: Artifact[] = [...bedroomArtifacts, ...failureArtifacts];
+export const bedroomArtifacts = artifacts.filter((a) => !a.isFailure || a.id === "broken-code");
+export const failureArtifacts = artifacts.filter((a) => a.position === "failure-wing");
+export const secretArtifacts = artifacts.filter((a) => a.isSecret);
 
-export const getArtifactById = (id: string): Artifact | undefined =>
-  allArtifacts.find((a) => a.id === id);
+export const getArtifact = (id: string): Artifact | undefined =>
+  artifacts.find((a) => a.id === id);
 
-/** Artifact ids highlighted by the 30-Second Quick Tour */
-export const quickTourIds = ["laptop", "fail-dream-app", "notebook"] as const;
+/* ── QUICK TOUR ─────────────────────────────────────────── */
 
-/** Narrator caption shown at each Quick Tour stop. */
-export const quickTourCaptions: Record<string, string> = {
-  laptop: "Where I taught myself AI, coding, and independent research.",
-  "fail-dream-app":
-    "My biggest failure taught me that ideas need disciplined execution.",
-  notebook:
-    "Where I plan my future: merging artificial intelligence and healthcare.",
-};
+export interface TourStep {
+  artifactId: string;
+  caption: string;
+}
 
-/* ============================================================
- *  CERTIFICATE EVIDENCE — VERIFIED DOCUMENTS
- * ============================================================
- *  Exact transcriptions of Anchit's certificates. The
- *  Certificate Evidence View renders these like the official
- *  documents, with a "Verified Evidence" stamp.
- * ============================================================ */
-
-export const certificateEvidence: Record<
-  string,
-  CertificateEvidence
-> = {
-  acl: {
-    kind: "certificate",
-    recipient: "Anchit Aman",
-    course: "Advanced Cardiac Life Support (ACLS) Course",
-    completionDate: "August 28, 2026",
-    issuer:
-      "SaveaLife.com, empowered by Advanced Medical Certification",
-    standards: [
-      "Adheres to the latest ILCOR Standards and Guidelines",
-      "Joint Commission (JCAHO) compliant",
-    ],
-    signatories: [
-      { name: "Karl F. Disque, D.O., RPh.", role: "Certifying Physician" },
-    ],
-  },
-  bls: {
-    kind: "certificate",
-    recipient: "Anchit Aman",
-    course: "Basic Life Support (BLS) Course",
-    completionDate: "August 27, 2026",
-    issuer:
-      "SaveaLife.com, empowered by Advanced Medical Certification",
-    standards: [
-      "Adheres to the latest ILCOR Standards and Guidelines",
-      "Joint Commission (JCAHO) compliant",
-    ],
-    signatories: [
-      { name: "Karl F. Disque, D.O., RPh.", role: "Certifying Physician" },
-    ],
-  },
-  moes: {
-    kind: "participation",
-    recipient: "Anchit Aman",
-    course: "Foundation Day Quiz — Ministry of Earth Sciences",
-    completionDate: "2026",
-    issuer: "Ministry of Earth Sciences, Government of India · MyGov",
-    tagline: "Advancing Earth Sciences, Empowering the Nation",
-    standards: [],
-    signatories: [
-      {
-        name: "Sreenivasa Rao Gangi Reddy",
-        role: "Joint Secretary, Ministry of Earth Sciences",
-      },
-      { name: "Ajit Kumar, IAS", role: "CEO, MyGov" },
-    ],
-  },
-  aarogya: {
-    kind: "participation",
-    recipient: "Anchit Aman",
-    course: "Aarogya Setu 2.0 Awareness Quiz",
-    completionDate: "2026",
-    issuer:
-      "Ministry of Health and Family Welfare · National Health Authority · MyGov",
-    tagline:
-      "Promoting awareness of digital health and the Aarogya Setu 2.0 app",
-    standards: [],
-    signatories: [
-      { name: "Ajit Kumar, IAS", role: "CEO, MyGov" },
-      {
-        name: "Dr. Sunil Kumar Barnwal, IAS",
-        role: "Mission Director, National Health Authority",
-      },
-    ],
-  },
-};
-
-/** Map evidence link labels to their certificate record. */
-export const evidenceLabelToCertificate: Record<string, CertificateEvidence> =
+export const quickTour: TourStep[] = [
   {
-    "Advanced Cardiac Life Support (ACLS)": certificateEvidence.acl,
-    "Basic Life Support (BLS)": certificateEvidence.bls,
-    "MoES Foundation Day Quiz 2026 — Participation": certificateEvidence.moes,
-    "Aarogya Setu 2.0 Quiz — Participation": certificateEvidence.aarogya,
-  };
+    artifactId: "laptop",
+    caption: "Where I taught myself AI, coding, and independent research.",
+  },
+  {
+    artifactId: "fail-dream-app",
+    caption: "My biggest failure taught me that ideas need disciplined execution.",
+  },
+  {
+    artifactId: "notebook",
+    caption: "Where I plan my future: merging artificial intelligence and healthcare.",
+  },
+];
+
+/* ── CURATOR'S NOTE ─────────────────────────────────────── */
+
+export const curator = {
+  name: "Anchit Aman",
+  role: "Curator",
+  subtitle: "Behind the exhibits is a person who refused to wait for permission.",
+  statement:
+    "I completed Grade 12 at age 16. Because I was below the minimum age required for college admission, I took a gap year before entering college. Instead of treating that year as a pause, I turned it into a laboratory. I prepared for NEET independently and qualified twice. I taught myself AI and programming through free online resources and courses from Google, Cisco, and NVIDIA. I interned with an AI startup. I co-founded a community food initiative that helped feed 200+ people through NGO partnerships and bakery sponsorships. I founded a neighborhood running club, built its website myself, and used it to encourage consistency and community participation. I started EcoHub, planted over 40 flowers and trees, fed stray dogs, and adopted an injured stray puppy. I tutored three Class 10 students in Biology and helped improve their average marks by approximately 30 points. I built websites, apps, and games independently, including a functional chess game. I also learned that being a jack of all trades is both a strength and a weakness. It makes me curious, but it also forces me to fight for focus. This museum is not proof that I have everything figured out. It is proof that I keep moving.",
+  values: [
+    "Relentlessness",
+    "Independence",
+    "Curiosity",
+    "Empathy",
+    "Discipline",
+    "Self-awareness",
+  ],
+  futureDirection:
+    "My future lies at the intersection of Artificial Intelligence and Biology. I want to use technology to improve healthcare, understand living systems, and build tools that make medical knowledge more accessible. The certificates, coding projects, and biology tutoring are not separate parts of my life. They are all evidence of the same direction.",
+  askMeAbout: [
+    "My gap year at age 16",
+    "Qualifying NEET twice independently",
+    "Cold-calling bakeries for food sponsorships",
+    "Teaching myself AI and programming",
+    "The app I failed to launch",
+    "My ACLS and BLS certifications",
+    "The letter I wrote as a kid",
+    "Why I want to merge AI and Biology",
+  ],
+};
+
+/* ── GIFT SHOP ──────────────────────────────────────────── */
+
+export const giftShop = {
+  email: "anchitaman00@gmail.com",
+  runClubUrl: "https://rushranchi.vercel.app/",
+  runClubLabel: "RUSH Running Club",
+  closingMessage:
+    "Thank you for visiting my room. The next chapter is currently being coded.",
+};
