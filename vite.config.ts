@@ -8,6 +8,9 @@ export default defineConfig({
     host: "0.0.0.0",
     hmr: false,
     port: Number(process.env.PORT) || 5173,
+    // Allow the managed Freebuff/E2B preview host (port-prefixed,
+    // so the whole sandbox provider suffix is allowed).
+    allowedHosts: [".e2b.app"],
   },
   preview: {
     host: "0.0.0.0",
