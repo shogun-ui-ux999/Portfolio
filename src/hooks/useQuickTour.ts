@@ -1,61 +1,79 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getArtifactById, quickTourIds } from "../data/artifacts";
 import type { Artifact } from "../data/artifacts";
 
-export type TourState = "idle" | "running";
-
-/** How long each tour stop stays open (ms). */
-const STOP_DURATION_MS = 6000; // 3 stops × ~6s ≈ a 30-second tour
+export type TourState = "idle" | "running" | "finished";
 
 /**
- * Drives the 30-Second Quick Tour: opens the modal for each
- * artifact in `quickTourIds` in sequence, auto-advancing until
- * the tour finishes or the visitor skips it.
+ * Drives the 30-Second Quick Tour: walks the visitor through
+ * three stops at their own pace — Next / Back buttons, Skip at
+ * any time, and two closing paths when the tour ends.
  */
 export function useQuickTour(onVisit: (artifact: Artifact) => void) {
   const [tourState, setTourState] = useState<TourState>("idle");
   const [activeArtifact, setActiveArtifact] = useState<Artifact | null>(null);
-  const timerRef = useRef<number | null>(null);
-
-  const clearTimer = useCallback(() => {
-    if (timerRef.current !== null) {
-      window.clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-  }, []);
 
   const stopTour = useCallback(() => {
-    clearTimer();
     setTourState("idle");
     setActiveArtifact(null);
-  }, [clearTimer]);
+  }, []);
 
   const startTour = useCallback(() => {
-    clearTimer();
+    const first = getArtifactById(quickTourIds[0]);
     setTourState("running");
+    setActiveArtifact(first ?? null);
+    if (first) onVisit(first);
+  }, [onVisit]);
 
-    let step = 0;
-    const advance = () => {
-      if (step >= quickTourIds.length) {
-        setTourState("idle");
+  const goToStop = useCallback(
+    (index: number) => {
+      if (index < 0 || index >= quickTourIds.length) {
+        // Walking past either end finishes the tour.
+        setTourState("finished");
         setActiveArtifact(null);
         return;
       }
-      const artifact = getArtifactById(quickTourIds[step]);
-      step += 1;
-      if (!artifact) {
-        advance();
-        return;
-      }
+      const artifact = getArtifactById(quickTourIds[index]);
+      if (!artifact) return;
+      setTourState("running");
       setActiveArtifact(artifact);
       onVisit(artifact);
-      timerRef.current = window.setTimeout(advance, STOP_DURATION_MS);
+    },
+    [onVisit]
+  );
+
+  const step = quickTourIds.indexOf(
+    (activeArtifact?.id ?? "") as (typeof quickTourIds)[number]
+  );
+
+  const nextStop = useCallback(
+    () => goToStop(step + 1),
+    [goToStop, step]
+  );
+  const previousStop = useCallback(() => {
+    // "Back" on the very first stop does nothing.
+    if (step > 0) goToStop(step - 1);
+  }, [goToStop, step]);
+
+  // Escape during the tour skips it (handled in ArtifactModal too).
+  useEffect(() => {
+    if (tourState !== "running") return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowRight") nextStop();
+      if (event.key === "ArrowLeft") previousStop();
     };
-    advance();
-  }, [clearTimer, onVisit]);
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [tourState, nextStop, previousStop]);
 
-  // Always clean up the pending timer on unmount.
-  useEffect(() => clearTimer, [clearTimer]);
-
-  return { tourState, activeArtifact, startTour, stopTour };
+  return {
+    tourState,
+    activeArtifact,
+    step,
+    total: quickTourIds.length,
+    startTour,
+    stopTour,
+    nextStop,
+    previousStop,
+  };
 }
