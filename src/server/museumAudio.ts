@@ -50,10 +50,7 @@ function publicUrlForKey(key: string): string {
 async function fetchAudioUrls(): Promise<MuseumAudioUrls> {
   const token = process.env.UPLOADTHING_TOKEN;
   if (!token) {
-    console.warn(
-      "[museum-audio] UPLOADTHING_TOKEN is not set — serving transcript-only experience.",
-    );
-    return {};
+    throw new Error("UPLOADTHING_TOKEN is not set");
   }
 
   // UTApi reads UPLOADTHING_TOKEN from the environment automatically.
@@ -85,6 +82,12 @@ async function fetchAudioUrls(): Promise<MuseumAudioUrls> {
  * Returns a map of artifact id → public audio url, e.g.
  * `{ welcome: "https://utfs.io/f/...", laptop: "https://utfs.io/f/..." }`.
  * Never throws; resolves to `{}` on any failure.
+ *
+ * Caching policy: only successful, non-empty lookups are cached.
+ * Failures, timeouts, and empty results are retried on the next
+ * request (coalesced while in flight), so the museum self-heals
+ * after a transient Uploadthing outage or a late file upload
+ * instead of staying transcript-only until a server restart.
  */
 export async function getMuseumAudioUrls(): Promise<MuseumAudioUrls> {
   if (cache) return cache;
@@ -92,21 +95,20 @@ export async function getMuseumAudioUrls(): Promise<MuseumAudioUrls> {
 
   inflight = (async () => {
     try {
-      // Guard against a hung UploadThing API — resolve empty after 10s.
+      // Guard against a hung UploadThing API — give up after 10s.
       const result = await Promise.race([
         fetchAudioUrls(),
-        new Promise<MuseumAudioUrls>((resolve) =>
-          setTimeout(() => {
-            console.warn("[museum-audio] UploadThing API timed out — serving transcripts only.");
-            resolve({});
-          }, 10_000),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("UploadThing API timed out")), 10_000),
         ),
       ]);
-      cache = result;
+      if (Object.keys(result).length > 0) {
+        cache = result;
+      }
       return result;
     } catch (error) {
       console.warn(
-        "[museum-audio] failed to fetch audio URLs — serving transcript-only experience:",
+        "[museum-audio] failed to fetch audio URLs — serving transcript-only experience (will retry on next request):",
         error instanceof Error ? error.message : error,
       );
       return {};
