@@ -31,6 +31,24 @@ export type RoomPosition =
 export interface EvidenceLink {
   label: string;
   url: string;
+  /** true → renders a "Verified" badge and the official-certificate overlay */
+  verified?: boolean;
+}
+
+/**
+ * Structured fields for official certificates — the Certificate
+ * Evidence View renders these like the physical document.
+ */
+export interface CertificateEvidence {
+  kind: "certificate" | "participation";
+  recipient: string;
+  course: string;
+  /** e.g. "August 28, 2026" or "August 2026" */
+  completionDate: string;
+  issuer: string;
+  tagline?: string;
+  standards?: string[];
+  signatories: Array<{ name: string; role: string }>;
 }
 
 export interface Artifact {
@@ -46,6 +64,8 @@ export interface Artifact {
   story: string;
   lesson: string;
   evidenceLinks: EvidenceLink[];
+  /** Verbatim narration for the Audio Guide panel (coming soon) */
+  audioGuideScript?: string;
   /** Where it sits in the bedroom scene */
   position: RoomPosition;
   /** true → displayed in the Museum of Failures */
@@ -72,6 +92,8 @@ export const bedroomArtifacts: Artifact[] = [
     evidenceLinks: [
       { label: "Visit Run Club Site", url: "https://rushranchi.vercel.app/" },
     ],
+    audioGuideScript:
+      "You've found the brightest spot in the room. This is where I taught myself AI and programming — no classroom, no permission slip. While others were asleep, I was inside Google and NVIDIA courses, interning at an AI startup, and building the backend for my running club. If you want to learn something, the internet is your classroom, and the code is your exam.",
     position: "desk",
     isFailure: false,
     isSecret: false,
@@ -98,10 +120,33 @@ export const bedroomArtifacts: Artifact[] = [
     objectName: "Stack of medical and tech certificates",
     category: "Achievement",
     story:
-      "I qualified for NEET (India's national medical exam) twice, independently. But I didn't stop at biology. I also got certified in Advanced Cardiac Life Support (ACLS, completed 08/28/2026) and Basic Life Support (BLS, completed 08/27/2026) before even entering college, alongside tech certs from Cisco and MoES.",
+      "I qualified for NEET, India's national medical entrance examination, twice consecutively while preparing independently. But I did not stop at theory. Before entering college, I completed Advanced Cardiac Life Support (ACLS) and Basic Life Support (BLS) through SaveaLife.com, empowered by Advanced Medical Certification. Both courses adhere to the latest ILCOR Standards and Guidelines and are Joint Commission (JCAHO) compliant. Alongside these, I earned technology certificates from Google, Cisco, NVIDIA, MoES, and Aarogya Setu 2.0.",
     lesson:
       "True education isn't just about the degree you're chasing; it's about the skills you gather along the way.",
-    evidenceLinks: [],
+    evidenceLinks: [
+      {
+        label: "Advanced Cardiac Life Support (ACLS)",
+        url: "",
+        verified: true,
+      },
+      {
+        label: "Basic Life Support (BLS)",
+        url: "",
+        verified: true,
+      },
+      {
+        label: "MoES Foundation Day Quiz 2026 — Participation",
+        url: "",
+        verified: true,
+      },
+      {
+        label: "Aarogya Setu 2.0 Quiz — Participation",
+        url: "",
+        verified: true,
+      },
+    ],
+    audioGuideScript:
+      "Look up at the shelf — those aren't participation trophies. I qualified for NEET, India's national medical entrance examination, twice, while preparing on my own. But I didn't stop at theory. Before college even began, I completed Advanced Cardiac Life Support and Basic Life Support — actual emergency-medicine training, ILCOR standards, JCAHO compliant. Alongside those, technology certificates from Google, Cisco, NVIDIA, MoES, and Aarogya Setu 2.0. When I say I taught myself, this shelf is the receipt.",
     position: "shelf",
     isFailure: false,
     isSecret: false,
@@ -117,6 +162,8 @@ export const bedroomArtifacts: Artifact[] = [
     lesson:
       "Mastery is just the accumulation of thousands of failures that you refused to quit.",
     evidenceLinks: [],
+    audioGuideScript:
+      "Careful — this one isn't beautiful. When I started coding alone, everything broke. Weeks of syntax errors, missing semicolons, logic flaws, no mentor to ask. Frame it however you like, it's still a wall of red. But this is what the start of mastery actually looks like: thousands of small failures that you simply refused to quit.",
     position: "wall",
     isFailure: true,
     isSecret: false,
@@ -177,6 +224,8 @@ export const bedroomArtifacts: Artifact[] = [
     lesson:
       "The person you promised you'd become as a child is still waiting for you to show up.",
     evidenceLinks: [],
+    audioGuideScript:
+      "You found the drawer. Most visitors walk right past it. Hidden here is a letter I wrote to myself as a kid — it says: 'I will achieve all my dreams and be the best man ever.' I keep it hidden because it's deeply personal. But whenever my ego tells me to give up, I read it again. The child who wrote that is still waiting for me to show up.",
     position: "drawer",
     isFailure: false,
     isSecret: true,
@@ -192,6 +241,8 @@ export const bedroomArtifacts: Artifact[] = [
     lesson:
       "Every 'yes' to a dream requires a thousand silent 'no's' to distractions.",
     evidenceLinks: [],
+    audioGuideScript:
+      "One last thing before you leave the room. This plain, worn bracelet stands for every distraction I quit and every normal teenage evening I gave up during the gap year — while others were out, I was grinding through NEET prep, code, and community work. Every 'yes' to a dream requires a thousand silent 'no's to distractions. This is what they look like, woven together.",
     position: "desk",
     isFailure: false,
     isSecret: true,
@@ -261,3 +312,99 @@ export const getArtifactById = (id: string): Artifact | undefined =>
 
 /** Artifact ids highlighted by the 30-Second Quick Tour */
 export const quickTourIds = ["laptop", "fail-dream-app", "notebook"] as const;
+
+/** Narrator caption shown at each Quick Tour stop. */
+export const quickTourCaptions: Record<string, string> = {
+  laptop: "Where I taught myself AI, coding, and independent research.",
+  "fail-dream-app":
+    "My biggest failure taught me that ideas need disciplined execution.",
+  notebook:
+    "Where I plan my future: merging artificial intelligence and healthcare.",
+};
+
+/* ============================================================
+ *  CERTIFICATE EVIDENCE — VERIFIED DOCUMENTS
+ * ============================================================
+ *  Exact transcriptions of Anchit's certificates. The
+ *  Certificate Evidence View renders these like the official
+ *  documents, with a "Verified Evidence" stamp.
+ * ============================================================ */
+
+export const certificateEvidence: Record<
+  string,
+  CertificateEvidence
+> = {
+  acl: {
+    kind: "certificate",
+    recipient: "Anchit Aman",
+    course: "Advanced Cardiac Life Support (ACLS) Course",
+    completionDate: "August 28, 2026",
+    issuer:
+      "SaveaLife.com, empowered by Advanced Medical Certification",
+    standards: [
+      "Adheres to the latest ILCOR Standards and Guidelines",
+      "Joint Commission (JCAHO) compliant",
+    ],
+    signatories: [
+      { name: "Karl F. Disque, D.O., RPh.", role: "Certifying Physician" },
+    ],
+  },
+  bls: {
+    kind: "certificate",
+    recipient: "Anchit Aman",
+    course: "Basic Life Support (BLS) Course",
+    completionDate: "August 27, 2026",
+    issuer:
+      "SaveaLife.com, empowered by Advanced Medical Certification",
+    standards: [
+      "Adheres to the latest ILCOR Standards and Guidelines",
+      "Joint Commission (JCAHO) compliant",
+    ],
+    signatories: [
+      { name: "Karl F. Disque, D.O., RPh.", role: "Certifying Physician" },
+    ],
+  },
+  moes: {
+    kind: "participation",
+    recipient: "Anchit Aman",
+    course: "Foundation Day Quiz — Ministry of Earth Sciences",
+    completionDate: "2026",
+    issuer: "Ministry of Earth Sciences, Government of India · MyGov",
+    tagline: "Advancing Earth Sciences, Empowering the Nation",
+    standards: [],
+    signatories: [
+      {
+        name: "Sreenivasa Rao Gangi Reddy",
+        role: "Joint Secretary, Ministry of Earth Sciences",
+      },
+      { name: "Ajit Kumar, IAS", role: "CEO, MyGov" },
+    ],
+  },
+  aarogya: {
+    kind: "participation",
+    recipient: "Anchit Aman",
+    course: "Aarogya Setu 2.0 Awareness Quiz",
+    completionDate: "2026",
+    issuer:
+      "Ministry of Health and Family Welfare · National Health Authority · MyGov",
+    tagline:
+      "Promoting awareness of digital health and the Aarogya Setu 2.0 app",
+    standards: [],
+    signatories: [
+      { name: "Ajit Kumar, IAS", role: "CEO, MyGov" },
+      {
+        name: "Dr. Sunil Kumar Barnwal, IAS",
+        role: "Mission Director, National Health Authority",
+      },
+    ],
+  },
+};
+
+/** Map evidence link labels to their certificate record. */
+export const evidenceLabelToCertificate: Record<string, CertificateEvidence> =
+  {
+    "Advanced Cardiac Life Support (ACLS)": certificateEvidence.acl,
+    "Basic Life Support (BLS)": certificateEvidence.bls,
+    "MoES Foundation Day Quiz 2026 — Participation": certificateEvidence.moes,
+    "Aarogya Setu 2.0 Quiz — Participation": certificateEvidence.aarogya,
+  };

@@ -1,7 +1,6 @@
 /**
  * PAGE 5 — THE GIFT SHOP (CONTACT & LINKS)
- * "Take something with you." Resume download is wired in a
- * later prompt once the file exists.
+ * "Take something with you." Downloads and correspondence.
  */
 export default function GiftShopPage() {
   return (
@@ -52,9 +51,30 @@ export default function GiftShopPage() {
         </a>
       </div>
 
+      {/* Downloads */}
+      <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+        <a
+          href="/assets/resume.pdf"
+          download="Anchit-Aman-Resume.pdf"
+          className="btn-lamp"
+        >
+          Download Resume
+        </a>
+        <a
+          href="/assets/museum-brochure.pdf"
+          download="Anchits-Museum-Brochure.pdf"
+          className="btn-ghost"
+        >
+          Download Museum Brochure
+        </a>
+      </div>
+      <p className="mt-4 text-center font-type text-[0.6rem] uppercase tracking-[0.25em] text-paper-400/60">
+        Documents on file at the front desk
+      </p>
+
       <div className="mt-14 text-center">
         <p className="font-hand text-3xl leading-snug text-paper-200">
-          &ldquo;Thanks for visiting my room. The next chapter is currently
+          &ldquo;Thank you for visiting my room. The next chapter is currently
           being coded.&rdquo;
         </p>
       </div>

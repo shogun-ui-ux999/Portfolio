@@ -1,28 +1,35 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { bedroomArtifacts, quickTourIds } from "../data/artifacts";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { bedroomArtifacts } from "../data/artifacts";
 import { hotspotArtifacts } from "../data/hotspots";
 import { useViewedArtifacts } from "../hooks/useViewedArtifacts";
 import { useQuickTour } from "../hooks/useQuickTour";
+import { useDiscoveredSecrets } from "../hooks/useDiscoveredSecrets";
 import ArtifactHotspot from "../components/ArtifactHotspot";
 import ArtifactModal from "../components/ArtifactModal";
+import ListViewPanel from "../components/ListViewPanel";
 import type { Artifact } from "../data/artifacts";
 
 /**
  * PAGE 2 — THE BEDROOM
  * The main interactive space: a late-night bedroom scene with
- * nine clickable artifact hotspots, a live progress tracker,
- * and ambient lamp light. Hosts the 30-Second Quick Tour,
- * which can also be launched from the Entrance via #tour.
+ * nine artifact hotspots, a progress tracker, a secret latch,
+ * the Master Catalog list view, and the manual Quick Tour.
  */
 export default function BedroomPage() {
   const { viewed, markViewed } = useViewedArtifacts();
   const [modalArtifact, setModalArtifact] = useState<Artifact | null>(null);
+  const [listViewOpen, setListViewOpen] = useState(false);
+  const [hoveredSecretId, setHoveredSecretId] = useState<string | null>(null);
+  const [toastVisible, setToastVisible] = useState(false);
+  const { secretsUnlocked } = useDiscoveredSecrets(viewed);
 
   const openArtifact = useCallback(
     (artifact: Artifact) => {
       markViewed(artifact.id);
       setModalArtifact(artifact);
+      setListViewOpen(false);
+      setHoveredSecretId(null);
     },
     [markViewed]
   );
@@ -30,13 +37,40 @@ export default function BedroomPage() {
   const {
     tourState,
     activeArtifact: tourArtifact,
+    step: tourStep,
+    total: tourTotal,
     startTour,
     stopTour,
+    nextStop,
+    previousStop,
   } = useQuickTour(openArtifact);
 
-  // The tour's modal wins when it is running.
-  const effectiveArtifact = tourState === "running" ? tourArtifact : modalArtifact;
+  // The tour's modal wins while it is running.
+  const effectiveArtifact =
+    tourState === "running" ? tourArtifact : modalArtifact;
   const isTour = tourState === "running" && tourArtifact !== null;
+
+  // Ending the tour (skip, finish, or close) shuts its plaque too.
+  const endTour = useCallback(() => {
+    stopTour();
+    setModalArtifact(null);
+  }, [stopTour]);
+
+  // Toast fires once, after both private items have been seen.
+  const toastShownRef = useRef(false);
+  useEffect(() => {
+    if (secretsUnlocked && !toastShownRef.current) {
+      const secretCount = bedroomArtifacts.filter(
+        (a) => a.isSecret && viewed.has(a.id)
+      ).length;
+      if (secretCount === 2) {
+        toastShownRef.current = true;
+        setToastVisible(true);
+        const timer = window.setTimeout(() => setToastVisible(false), 6000);
+        return () => window.clearTimeout(timer);
+      }
+    }
+  }, [secretsUnlocked, viewed]);
 
   // Launch the tour when arriving via the Entrance's #tour hash.
   // A ref guard keeps StrictMode's double-invoked effects from
@@ -57,12 +91,25 @@ export default function BedroomPage() {
     }
   }, [location.hash]);
 
+  // Open the Master Catalog when arriving via #catalog (Entrance's
+  // "View Artifact List"). Same StrictMode-safe ref guard.
+  const catalogLaunchRef = useRef(false);
+  useEffect(() => {
+    if (location.hash === "#catalog" && !catalogLaunchRef.current) {
+      catalogLaunchRef.current = true;
+      setListViewOpen(true);
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, [location.hash]);
+
   const viewedCount = useMemo(
     () => bedroomArtifacts.filter((a) => viewed.has(a.id)).length,
     [viewed]
   );
   const total = bedroomArtifacts.length;
   const allViewed = viewedCount === total;
+
+  const navigate = useNavigate();
 
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-10 sm:px-8 sm:py-14">
@@ -75,7 +122,15 @@ export default function BedroomPage() {
           </h1>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-paper-300/85">
             Nine objects, each with a story. Click the glowing hotspots to
-            read their plaques — or wander the room at your own pace.
+            read their plaques — or browse the{" "}
+            <button
+              type="button"
+              onClick={() => setListViewOpen(true)}
+              className="underline decoration-amber-lamp/50 underline-offset-4 transition-colors hover:text-amber-glow"
+            >
+              Master Catalog
+            </button>
+            .
           </p>
         </div>
 
@@ -134,16 +189,42 @@ export default function BedroomPage() {
           className="pointer-events-none absolute inset-0 shadow-[inset_0_0_140px_rgba(14,10,7,0.9)]"
         />
 
-        {/* Artifact hotspots */}
-        {hotspotArtifacts.map(({ artifact, hotspot }) => (
-          <ArtifactHotspot
-            key={artifact.id}
-            artifact={artifact}
-            hotspot={hotspot}
-            viewed={viewed.has(artifact.id)}
-            onOpen={openArtifact}
-          />
-        ))}
+        {/* Artifact hotspots — secrets stay hidden until the latch opens */}
+        {hotspotArtifacts.map(({ artifact, hotspot }) => {
+          if (artifact.isSecret && !secretsUnlocked) return null;
+
+          const isSecret = artifact.isSecret;
+          const secretNotViewed = isSecret && !viewed.has(artifact.id);
+
+          return (
+            <ArtifactHotspot
+              key={artifact.id}
+              artifact={artifact}
+              hotspot={hotspot}
+              viewed={viewed.has(artifact.id)}
+              hint={
+                artifact.id === "drawer-letter"
+                  ? "Something old is hidden here."
+                  : "A quiet sacrifice."
+              }
+              showHint={secretNotViewed && hoveredSecretId === artifact.id}
+              badge={
+                isSecret && viewed.has(artifact.id)
+                  ? "Curator’s Private Item"
+                  : undefined
+              }
+              onOpen={openArtifact}
+              onMouseEnter={
+                secretNotViewed
+                  ? () => setHoveredSecretId(artifact.id)
+                  : undefined
+              }
+              onMouseLeave={
+                secretNotViewed ? () => setHoveredSecretId(null) : undefined
+              }
+            />
+          );
+        })}
 
         {/* Completion stamp */}
         {allViewed && (
@@ -165,38 +246,116 @@ export default function BedroomPage() {
         <p className="font-type text-[0.6rem] uppercase tracking-[0.3em] text-paper-400/70">
           Lighting: desk lamp, 1:12 AM — Best experienced with sound off
         </p>
-        <button
-          type="button"
-          onClick={startTour}
-          className="btn-ghost !px-5 !py-2 text-xs"
-        >
-          Replay the 30-Second Tour
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={startTour}
+            className="btn-ghost !px-5 !py-2 text-xs"
+          >
+            Replay the 30-Second Tour
+          </button>
+          {/* List view for accessibility / keyboard users */}
+          <button
+            type="button"
+            onClick={() => setListViewOpen(true)}
+            className="btn-ghost !px-5 !py-2 text-xs"
+          >
+            Prefer a list view?
+          </button>
+        </div>
       </div>
 
-      {/* Artifact Modal (shared by hotspots and the quick tour) */}
+      {/* Artifact Modal (shared by hotspots, catalog, and tour) */}
       <ArtifactModal
         artifact={effectiveArtifact}
         onClose={() => {
-          if (isTour) stopTour();
-          setModalArtifact(null);
+          if (isTour) endTour();
+          else setModalArtifact(null);
         }}
         tour={
           isTour && tourArtifact
             ? {
-                step: quickTourStep(tourArtifact.id),
-                total: quickTourIds.length,
-                onSkip: stopTour,
+                step: tourStep,
+                total: tourTotal,
+                onBack: previousStop,
+                onNext: nextStop,
+                onSkip: endTour,
               }
             : null
         }
       />
+
+      {/* Master Catalog list view */}
+      {listViewOpen && (
+        <ListViewPanel
+          onSelectArtifact={openArtifact}
+          onClose={() => setListViewOpen(false)}
+        />
+      )}
+
+      {/* Secret-discovery toast */}
+      <div
+        aria-live="polite"
+        className={`pointer-events-none fixed bottom-6 left-1/2 z-[120] w-max max-w-[92vw] -translate-x-1/2 rounded-lg border border-gold-400/50 bg-night-950/95 px-5 py-3 text-center shadow-plaque transition-all duration-500 ${
+          toastVisible
+            ? "translate-y-0 opacity-100"
+            : "pointer-events-none translate-y-3 opacity-0"
+        }`}
+        data-testid="secret-toast"
+      >
+        <p className="font-hand text-lg leading-snug text-gold-400">
+          You found the private collection. The curator appreciates curiosity.
+        </p>
+      </div>
+
+      {/* Quick Tour finished screen */}
+      {tourState === "finished" && (
+        <div
+          className="fixed inset-0 z-[130] flex items-center justify-center bg-night-950/90 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="tour-finished-title"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) endTour();
+          }}
+        >
+          <div className="museum-card w-full max-w-lg p-8 text-center sm:p-10">
+            <p className="museum-eyebrow">Tour Complete</p>
+            <h2
+              id="tour-finished-title"
+              className="mt-3 font-serif text-3xl font-semibold text-paper-50"
+            >
+              That was the lightning version.
+            </h2>
+            <p className="mt-4 text-sm leading-relaxed text-paper-300/90">
+              The room has far more to show you — including a drawer most
+              visitors walk right past.
+            </p>
+            <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+              <button
+                type="button"
+                onClick={endTour}
+                className="btn-lamp"
+              >
+                Explore the Bedroom
+              </button>
+              <Link to="/failures" className="btn-ghost">
+                Visit the Museum of Failures
+              </Link>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                endTour();
+                navigate("/");
+              }}
+              className="mt-6 text-xs text-paper-400 underline underline-offset-4 transition-colors hover:text-amber-glow"
+            >
+              Back to the Entrance
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
-}
-
-/** 1-based position of an artifact in the quick tour sequence. */
-function quickTourStep(artifactId: string): number {
-  const index = quickTourIds.indexOf(artifactId as (typeof quickTourIds)[number]);
-  return index + 1;
 }

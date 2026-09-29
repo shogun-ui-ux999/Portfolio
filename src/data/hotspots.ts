@@ -10,6 +10,10 @@ import { bedroomArtifacts } from "./artifacts";
  *  `public/assets/bedroom-background.svg`. To move an artifact,
  *  adjust `x` / `y` (center of the object) here — no component
  *  changes needed.
+ *
+ *  Failure exhibits are NOT pinned in the bedroom — they hang in
+ *  their own wing (/failures). The Quick Tour still opens their
+ *  plaques directly from artifact data.
  * ============================================================
  */
 

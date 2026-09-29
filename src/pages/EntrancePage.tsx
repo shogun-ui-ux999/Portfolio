@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 /**
  * PAGE 1 — THE ENTRANCE
- * The ticket hall: sets the tone, offers three ways in.
+ * The ticket hall: sets the tone, offers the ways in.
  */
 export default function EntrancePage() {
   const navigate = useNavigate();
@@ -33,13 +33,16 @@ export default function EntrancePage() {
         prove it.&rdquo;
       </p>
 
-      {/* Three ways in — the tour jumps straight into the timed tour */}
-      <div className="mt-12 flex flex-col items-center gap-4 sm:flex-row">
+      {/* Four ways in */}
+      <div className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:flex-wrap sm:justify-center">
         <Link to="/bedroom" className="btn-lamp">
           Enter the Bedroom
         </Link>
         <button type="button" onClick={() => navigate("/bedroom#tour")} className="btn-ghost">
           Take the 30-Second Tour
+        </button>
+        <button type="button" onClick={() => navigate("/bedroom#catalog")} className="btn-ghost">
+          View Artifact List
         </button>
         <Link to="/failures" className="btn-ghost">
           Visit the Museum of Failures
