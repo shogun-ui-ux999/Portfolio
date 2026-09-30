@@ -131,7 +131,7 @@ export function Typewriter({
       {caret && (
         <span
           aria-hidden
-          className={`ml-0.5 inline-block w-[2px] translate-y-[2px] bg-amber-glow/80 ${
+          className={`ml-0.5 inline-block w-[2px] translate-y-[2px] bg-gold/80 ${
             done ? "animate-pulse" : ""
           }`}
           style={{ height: "1em" }}
@@ -157,15 +157,15 @@ export function DustMotes({ count = 16 }: { count?: number }) {
       {motes.map((m) => (
         <span
           key={m.id}
-          className="absolute rounded-full bg-paper-100"
+          className="absolute rounded-full bg-cyan/60"
           style={{
             left: `${m.left}%`,
             top: `${m.top}%`,
             width: m.size,
             height: m.size,
             opacity: 0,
-            animation: `dust-kf ${m.duration}s linear ${m.delay}s infinite`,
-            boxShadow: "0 0 6px rgba(245,238,218,0.5)",
+            animation: `dustDrift ${m.duration}s linear ${m.delay}s infinite`,
+            boxShadow: "0 0 6px rgba(0,212,255,0.4)",
           }}
         />
       ))}
@@ -223,15 +223,15 @@ export function GoldenRain({ active }: { active: boolean }) {
       {drops.map((d) => (
         <span
           key={d.id}
-          className="absolute top-[-12px] h-3 w-[3px] rounded-full bg-museum-gold"
+          className="absolute top-[-12px] h-3 w-[3px] rounded-full bg-gold"
           style={{
             left: `${d.left}%`,
-            boxShadow: "0 0 8px rgba(201,161,92,0.9)",
-            animation: `golden-drop-kf ${d.duration}s linear ${d.delay}s both`,
+            boxShadow: "0 0 8px rgba(240,192,64,0.9)",
+            animation: `goldenDrop ${d.duration}s linear ${d.delay}s both`,
           }}
         />
       ))}
-      <p className="museum-label absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-[0.7rem] text-museum-gold">
+      <p className="museum-label absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-[0.7rem] text-text-gold">
         The curator sees your curiosity.
       </p>
     </div>

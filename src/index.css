@@ -2,44 +2,47 @@
 @import "@uploadthing/react/styles.css";
 
 /*
-  ── ANCHIT'S MUSEUM ─────────────────────────────────────────
-  Late-night bedroom museum: warm charcoal, faded paper cream,
-  amber lamp light, glowing screen blue, subtle gold.
+  ── ANCHIT'S MUSEUM — DEEP SPACE EDITION ────────────────────
+  A museum that floats in the dark. Cyan fiber-optic light,
+  magenta pulse, gold for the rare and precious.
 */
 
 @theme {
-  /* Backgrounds — the room at night */
-  --color-night-950: #0e0b08;
-  --color-night-900: #15110d;
-  --color-night-800: #1d1712;
-  --color-night-700: #29211a;
-  --color-night-600: #372c22;
+  /* Base — near-black with subtle blue cast */
+  --color-deep-950: #06060e;
+  --color-deep-900: #0a0a18;
+  --color-deep-800: #0f0f24;
+  --color-deep-700: #161638;
+  --color-deep-600: #1e1e4a;
 
-  /* Paper — labels, plaques, notes */
-  --color-paper-50: #f5eeda;
-  --color-paper-100: #efe5cc;
-  --color-paper-200: #e9dfc8;
-  --color-paper-300: #d9cbaa;
-  --color-paper-400: #b7a582;
+  /* Cyan — primary accent, fiber-optic light */
+  --color-cyan: #00d4ff;
+  --color-cyan-deep: #0090b0;
+  --color-cyan-dim: rgba(0, 212, 255, 0.15);
 
-  /* Amber — lamp light */
-  --color-amber-glow: #e8a33d;
-  --color-amber-deep: #c77f2a;
+  /* Magenta — secondary accent, pulse */
+  --color-magenta: #ff2d78;
+  --color-magenta-deep: #b01050;
+  --color-magenta-dim: rgba(255, 45, 120, 0.12);
 
-  /* Screen blue — monitors at night */
-  --color-screen: #7fb4d9;
-  --color-screen-dim: #4a7a9b;
+  /* Gold — rare/premium accent */
+  --color-gold: #f0c040;
+  --color-gold-dim: rgba(240, 192, 64, 0.12);
 
-  /* Gold — museum accents */
-  --color-museum-gold: #c9a15c;
+  /* Paper — soft warm white for text */
+  --color-paper: #e8e4d8;
+  --color-paper-dim: #a8a498;
+  --color-paper-faint: rgba(232, 228, 216, 0.5);
 
-  /* Failure wing — faded brick / caution */
-  --color-fail-red: #b0524a;
-  --color-fail-amber: #d9a441;
+  /* Muted surfaces */
+  --color-surface: rgba(15, 15, 36, 0.8);
+  --color-surface-raised: rgba(22, 22, 56, 0.9);
 
-  --font-serif: "Fraunces", Georgia, "Times New Roman", serif;
+  /* Fonts */
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-hand: "Caveat", "Segoe Script", cursive;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
 }
 
 html {
@@ -47,87 +50,170 @@ html {
 }
 
 body {
-  @apply bg-night-900 text-paper-200 font-sans antialiased;
+  @apply bg-deep-950 text-paper font-sans antialiased;
   min-height: 100dvh;
+  overflow-x: hidden;
 }
 
-/* The desk-lamp radial glow that sits behind the whole site */
-.lamp-room {
-  background:
-    radial-gradient(ellipse 55% 42% at 50% 18%, rgba(232, 163, 61, 0.13), transparent 70%),
-    radial-gradient(ellipse 90% 70% at 50% 50%, rgba(55, 44, 34, 0.5), transparent 80%),
-    linear-gradient(to bottom, #15110d, #0e0b08);
-}
+/* ── BACKGROUND LAYERS ────────────────────────────────────── */
 
-/* Failures wing: dimmer, desaturated */
-.lamp-room-shadow {
-  background:
-    radial-gradient(ellipse 55% 42% at 50% 20%, rgba(176, 82, 74, 0.09), transparent 70%),
-    radial-gradient(ellipse 90% 70% at 50% 50%, rgba(35, 28, 26, 0.55), transparent 80%),
-    linear-gradient(to bottom, #120e0c, #0b0908);
-}
-
-/* Very subtle film grain for nostalgia */
-.grain::after {
-  content: "";
+/* Starfield: tiny dots scattered across the viewport */
+.starfield {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 60;
-  opacity: 0.05;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+  z-index: 0;
+  overflow: hidden;
 }
 
-/* Elegant museum label letter-spacing */
+.star {
+  position: absolute;
+  border-radius: 9999px;
+  background: #fff;
+  animation: star-twinkle var(--duration, 4s) ease-in-out var(--delay, 0s) infinite;
+}
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* Nebula clouds — soft colored blurs in the background */
+.nebula {
+  position: fixed;
+  border-radius: 9999px;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Vignette: darkens edges */
+.vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(ellipse 70% 60% at 50% 50%, transparent 40%, rgba(6, 6, 14, 0.85) 100%);
+}
+
+/* Scan line overlay: subtle CRT feel */
+.scanlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+}
+
+/* ── GLASS / SURFACE CARD ─────────────────────────────────── */
+
+.glass {
+  background: var(--color-surface);
+  backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-raised {
+  background: var(--color-surface-raised);
+  backdrop-filter: blur(28px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* ── GLOW EFFECTS ─────────────────────────────────────────── */
+
+.glow-cyan {
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.25), 0 0 60px rgba(0, 212, 255, 0.08);
+}
+
+.glow-magenta {
+  box-shadow: 0 0 20px rgba(255, 45, 120, 0.25), 0 0 60px rgba(255, 45, 120, 0.08);
+}
+
+.glow-gold {
+  box-shadow: 0 0 20px rgba(240, 192, 64, 0.3), 0 0 60px rgba(240, 192, 64, 0.1);
+}
+
+.text-glow-cyan {
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.5), 0 0 40px rgba(0, 212, 255, 0.2);
+}
+
+.text-glow-magenta {
+  text-shadow: 0 0 20px rgba(255, 45, 120, 0.5), 0 0 40px rgba(255, 45, 120, 0.2);
+}
+
+.text-glow-gold {
+  text-shadow: 0 0 20px rgba(240, 192, 64, 0.5), 0 0 40px rgba(240, 192, 64, 0.2);
+}
+
+/* ── NEON BRIGHTNESS GLOW (for hover states) ─────────────── */
+
+.neon-cyan {
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+}
+.neon-cyan:hover {
+  box-shadow: 0 0 16px rgba(0, 212, 255, 0.7), 0 0 40px rgba(0, 212, 255, 0.2);
+}
+
+.neon-magenta {
+  box-shadow: 0 0 8px rgba(255, 45, 120, 0.4);
+}
+.neon-magenta:hover {
+  box-shadow: 0 0 16px rgba(255, 45, 120, 0.7), 0 0 40px rgba(255, 45, 120, 0.2);
+}
+
+/* ── LABEL / TYPOGRAPHY UTILITIES ─────────────────────────── */
+
 .museum-label {
-  @apply font-sans uppercase;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  font-size: 0.6rem;
   letter-spacing: 0.35em;
 }
 
-/* Focus states — visible, warm, never hidden */
-:focus-visible {
-  outline: 2px solid var(--color-amber-glow);
-  outline-offset: 3px;
-  border-radius: 2px;
+.eyebrow-cyan {
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  font-size: 0.6rem;
+  letter-spacing: 0.35em;
+  color: var(--color-cyan);
 }
 
-/* ── ARTIFACT PHOTO TREATMENT — "messy nostalgia" ────────────
-   Real photos are tilted, shadowed, and graded like they were
-   shot at midnight under the desk lamp. */
-.artifact-photo {
-  display: inline-block;
-  overflow: hidden;
-  border-radius: 10px;
-  border: 1px solid rgba(183, 165, 130, 0.25);
-  transform: rotate(-2deg);
-  box-shadow:
-    0 14px 34px rgba(0, 0, 0, 0.65),
-    inset 0 1px 0 rgba(245, 238, 218, 0.06);
-  filter: sepia(0.22) saturate(0.88) contrast(1.05) brightness(0.92);
-  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), filter 0.45s ease, box-shadow 0.45s ease;
+.eyebrow-magenta {
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  font-size: 0.6rem;
+  letter-spacing: 0.35em;
+  color: var(--color-magenta);
 }
-.artifact-photo:hover {
-  transform: rotate(0deg) scale(1.03);
-  filter: sepia(0.1) saturate(1) contrast(1.04) brightness(1);
-  box-shadow:
-    0 20px 46px rgba(0, 0, 0, 0.75),
-    0 0 32px rgba(232, 163, 61, 0.18);
+
+.eyebrow-gold {
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  font-size: 0.6rem;
+  letter-spacing: 0.35em;
+  color: var(--color-gold);
 }
-.artifact-photo img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  user-select: none;
+
+.eyebrow-faint {
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  font-size: 0.6rem;
+  letter-spacing: 0.35em;
+  color: var(--color-paper-faint);
 }
 
 /* ── ANIMATION SYSTEM ───────────────────────────────────────
-   Organic ease curves, GPU-friendly (opacity/transform/filter).
-   Every variant is defined once and reused across the museum;
-   the reduced-motion block below neutralizes all of them.
-   ─────────────────────────────────────────────────────────── */
+   All animations are GPU-friendly (opacity, transform, filter).
+   Reduced motion kills all of them.
+*/
 
-/* Respect reduced motion — every animation and transition */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -139,166 +225,375 @@ body {
   }
 }
 
-@keyframes fade-up-kf {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Fade + slide combinations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-@keyframes fade-down-kf {
-  from { opacity: 0; transform: translateY(-30px); }
-  to { opacity: 1; transform: translateY(0); }
+
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-24px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-@keyframes fade-left-kf {
-  from { opacity: 0; transform: translateX(-30px); }
-  to { opacity: 1; transform: translateX(0); }
+
+@keyframes fadeLeft {
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
-@keyframes fade-right-kf {
-  from { opacity: 0; transform: translateX(30px); }
-  to { opacity: 1; transform: translateX(0); }
+
+@keyframes fadeRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
-@keyframes scale-in-kf {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
+
+/* Scale + fade */
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
 }
-@keyframes blur-in-kf {
-  from { opacity: 0; filter: blur(10px); }
-  to { opacity: 1; filter: blur(0); }
+
+/* Blur in */
+@keyframes blurIn {
+  from { opacity: 0; filter: blur(12px); }
+  to   { opacity: 1; filter: blur(0); }
 }
-@keyframes slide-reveal-kf {
+
+/* Clip reveal (slide from left) */
+@keyframes clipReveal {
   from { clip-path: inset(0 100% 0 0); }
-  to { clip-path: inset(0 0 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
 }
-@keyframes float-loop-kf {
+
+/* Float drift */
+@keyframes floatY {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+  50%      { transform: translateY(-8px); }
 }
-@keyframes pulse-glow-kf {
-  0%, 100% { box-shadow: 0 0 18px rgba(232, 163, 61, 0.18); }
-  50% { box-shadow: 0 0 42px rgba(232, 163, 61, 0.45); }
+
+@keyframes floatX {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(6px); }
 }
-@keyframes breathe-kf {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
+
+/* Pulse glow — breathing box-shadow */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 12px rgba(0, 212, 255, 0.15); }
+  50%      { box-shadow: 0 0 30px rgba(0, 212, 255, 0.35); }
 }
-@keyframes shimmer-kf {
+
+/* Cyan pulse variant */
+@keyframes pulseGlowCyan {
+  0%, 100% { box-shadow: 0 0 12px rgba(0, 212, 255, 0.12); }
+  50%      { box-shadow: 0 0 36px rgba(0, 212, 255, 0.4); }
+}
+
+/* Magenta pulse variant */
+@keyframes pulseGlowMagenta {
+  0%, 100% { box-shadow: 0 0 12px rgba(255, 45, 120, 0.12); }
+  50%      { box-shadow: 0 0 36px rgba(255, 45, 120, 0.4); }
+}
+
+/* Shimmer — moving highlight */
+@keyframes shimmer {
   from { background-position: 200% 0; }
-  to { background-position: -200% 0; }
+  to   { background-position: -200% 0; }
 }
-@keyframes wave-kf {
-  0%, 100% { height: 30%; }
-  50% { height: 100%; }
-}
-@keyframes intro-letter-kf {
-  from { opacity: 0; filter: blur(10px); transform: translateY(8px); }
-  to { opacity: 1; filter: blur(0); transform: translateY(0); }
-}
-@keyframes drop-in-kf {
-  0% { opacity: 0; transform: translateY(-26px); }
-  62% { opacity: 1; transform: translateY(3px); }
-  82% { transform: translateY(-2px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-@keyframes flicker-screen-kf {
+
+/* Typing caret blink */
+@keyframes caretBlink {
   0%, 100% { opacity: 1; }
-  3% { opacity: 0.72; }
-  5% { opacity: 1; }
-  47% { opacity: 1; }
-  49% { opacity: 0.85; }
-  51% { opacity: 1; }
+  50%      { opacity: 0; }
 }
-@keyframes page-flutter-kf {
-  0%, 88%, 100% { transform: rotate(0deg); }
-  91% { transform: rotate(-1.2deg); }
-  94% { transform: rotate(0.8deg); }
-  97% { transform: rotate(-0.4deg); }
+
+/* Intro letter appear */
+@keyframes introLetter {
+  from { opacity: 0; filter: blur(8px); transform: translateY(6px) scale(0.95); }
+  to   { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); }
 }
-@keyframes phone-glow-kf {
-  0%, 78%, 100% { opacity: 0.25; }
-  84% { opacity: 0.9; }
-  90% { opacity: 0.3; }
+
+/* Drop-in with bounce */
+@keyframes dropIn {
+  0%   { opacity: 0; transform: translateY(-30px) scale(0.9); }
+  60%  { opacity: 1; transform: translateY(4px) scale(1.01); }
+  80%  { transform: translateY(-2px) scale(1); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
 }
-@keyframes date-pulse-kf {
-  0%, 100% { box-shadow: 0 0 6px rgba(176, 82, 74, 0.25); }
-  50% { box-shadow: 0 0 14px rgba(176, 82, 74, 0.55); }
-}
-@keyframes glitch-kf {
-  0%, 6%, 100% { opacity: 1; transform: none; text-shadow: none; }
-  2% { opacity: 0.6; transform: translateX(-2px); text-shadow: 2px 0 rgba(176, 82, 74, 0.8), -2px 0 rgba(127, 180, 217, 0.8); }
-  4% { opacity: 0.9; transform: translateX(2px); }
-}
-@keyframes stamp-kf {
-  0% { opacity: 0; transform: scale(1.9) rotate(8deg); }
-  60% { opacity: 1; transform: scale(0.94) rotate(6deg); }
+
+/* Stamp impact */
+@keyframes stamp {
+  0%   { opacity: 0; transform: scale(2) rotate(10deg); }
+  60%  { opacity: 1; transform: scale(0.92) rotate(6deg); }
   100% { opacity: 1; transform: scale(1) rotate(6deg); }
 }
-@keyframes dust-kf {
-  0% { transform: translate(0, 0); opacity: 0; }
-  12% { opacity: 0.35; }
-  88% { opacity: 0.3; }
-  100% { transform: translate(14px, -46px); opacity: 0; }
-}
-@keyframes sway-kf {
-  0%, 100% { transform: rotate(-0.6deg); }
-  50% { transform: rotate(0.6deg); }
-}
-@keyframes lamp-breathe-kf {
-  0%, 100% { opacity: 0.8; }
-  50% { opacity: 1; }
-}
-@keyframes screen-cast-kf {
-  0%, 100% { opacity: 0.55; }
-  48% { opacity: 0.55; }
-  52% { opacity: 0.8; }
-  56% { opacity: 0.5; }
+
+/* Glitch (for failure wing) */
+@keyframes glitch {
+  0%, 7%, 100% { opacity: 1; transform: none; text-shadow: none; }
+  2%           { opacity: 0.5; transform: translateX(-3px); text-shadow: 3px 0 rgba(255, 45, 120, 0.9), -3px 0 rgba(0, 212, 255, 0.9); }
+  4%           { opacity: 0.9; transform: translateX(3px); }
 }
 
-.animate-fade-up { animation: fade-up-kf 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-fade-down { animation: fade-down-kf 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-fade-left { animation: fade-left-kf 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-fade-right { animation: fade-right-kf 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-scale-in { animation: scale-in-kf 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-blur-in { animation: blur-in-kf 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-slide-reveal { animation: slide-reveal-kf 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-float-loop { animation: float-loop-kf 6s ease-in-out infinite; }
-.animate-pulse-glow { animation: pulse-glow-kf 2.8s ease-in-out infinite; }
-.animate-breathe { animation: breathe-kf 4s ease-in-out infinite; }
-.animate-shimmer {
-  background: linear-gradient(100deg, transparent 35%, rgba(245, 238, 218, 0.14) 50%, transparent 65%);
-  background-size: 200% 100%;
-  animation: shimmer-kf 5.5s linear infinite;
+/* Dust drift */
+@keyframes dustDrift {
+  0%   { transform: translate(0, 0); opacity: 0; }
+  12%  { opacity: 0.4; }
+  88%  { opacity: 0.3; }
+  100% { transform: translate(16px, -50px); opacity: 0; }
 }
-.animate-drop-in { animation: drop-in-kf 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-flicker-screen { animation: flicker-screen-kf 9s linear infinite; }
-.animate-page-flutter { animation: page-flutter-kf 8s ease-in-out infinite; }
-.animate-phone-glow { animation: phone-glow-kf 11s linear infinite; }
-.animate-date-pulse { animation: date-pulse-kf 3.5s ease-in-out infinite; }
-.animate-glitch { animation: glitch-kf 4.5s steps(1) infinite; }
-.animate-stamp { animation: stamp-kf 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-sway { animation: sway-kf 6s ease-in-out infinite; }
-.animate-lamp-breathe { animation: lamp-breathe-kf 6s ease-in-out infinite; }
-.animate-screen-cast { animation: screen-cast-kf 7s linear infinite; }
-.animate-intro-letter { animation: intro-letter-kf 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-player-pulse { animation: pulse-glow-kf 1.6s ease-in-out 2; }
 
-/* Kept for existing callers */
-.animate-fade-in { animation: blur-in-kf 0.6s ease both; }
-.animate-lamp { animation: lamp-flicker-kf 7s linear infinite; }
-@keyframes lamp-flicker-kf {
+/* Sway (gentle rotation) */
+@keyframes sway {
+  0%, 100% { transform: rotate(-0.5deg); }
+  50%      { transform: rotate(0.5deg); }
+}
+
+/* Screen cast flicker */
+@keyframes screenFlicker {
+  0%, 100% { opacity: 0.5; }
+  48%      { opacity: 0.5; }
+  52%      { opacity: 0.85; }
+  56%      { opacity: 0.45; }
+}
+
+/* Page flutter */
+@keyframes pageFlutter {
+  0%, 88%, 100% { transform: rotate(0deg); }
+  91%           { transform: rotate(-1.2deg); }
+  94%           { transform: rotate(0.8deg); }
+  97%           { transform: rotate(-0.4deg); }
+}
+
+/* Phone glow pulse */
+@keyframes phoneGlow {
+  0%, 78%, 100% { opacity: 0.2; }
+  84%           { opacity: 0.9; }
+  90%           { opacity: 0.25; }
+}
+
+/* Date pulse (red dot) */
+@keyframes datePulse {
+  0%, 100% { box-shadow: 0 0 4px rgba(255, 45, 120, 0.2); }
+  50%      { box-shadow: 0 0 12px rgba(255, 45, 120, 0.6); }
+}
+
+/* Ring rotation (for loading/processing spinners) */
+@keyframes ringSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Neon tube flicker */
+@keyframes neonFlicker {
   0%, 100% { opacity: 1; }
-  92% { opacity: 1; }
-  93% { opacity: 0.82; }
-  94% { opacity: 1; }
-  97% { opacity: 0.9; }
+  3%        { opacity: 0.6; }
+  5%        { opacity: 1; }
+  47%       { opacity: 1; }
+  49%       { opacity: 0.5; }
+  51%       { opacity: 1; }
 }
 
-/* Sound-wave bars (custom audio player) */
-@keyframes wave {
-  0%, 100% { height: 30%; }
-  50% { height: 100%; }
+/* Breathing scale */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.02); }
 }
 
-/* Golden rain (easter egg) */
-@keyframes golden-drop-kf {
-  0% { transform: translateY(-12px); opacity: 0; }
-  10% { opacity: 1; }
-  100% { transform: translateY(105vh); opacity: 0.2; }
+/* Spin continuous */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── ANIMATION CLASS UTILITIES ────────────────────────────── */
+
+.animate-fade-up    { animation: fadeUp    0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-fade-down  { animation: fadeDown 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-fade-left  { animation: fadeLeft 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-fade-right { animation: fadeRight 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-scale-in   { animation: scaleIn  0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-blur-in    { animation: blurIn   0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-clip-reveal { animation: clipReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-float-y    { animation: floatY   5s ease-in-out infinite; }
+.animate-float-x    { animation: floatX   6s ease-in-out infinite; }
+.animate-pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
+.animate-pulse-glow-cyan { animation: pulseGlowCyan 2.8s ease-in-out infinite; }
+.animate-pulse-glow-magenta { animation: pulseGlowMagenta 2.8s ease-in-out infinite; }
+.animate-shimmer {
+  background: linear-gradient(100deg, transparent 35%, rgba(255,255,255,0.08) 50%, transparent 65%);
+  background-size: 200% 100%;
+  animation: shimmer 4s linear infinite;
+}
+.animate-drop-in   { animation: dropIn   0.85s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-slide-reveal { animation: clipReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-stamp     { animation: stamp    0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-glitch    { animation: glitch   4.5s steps(1) infinite; }
+.animate-sway      { animation: sway     5s ease-in-out infinite; }
+.animate-screen-flicker { animation: screenFlicker 7s linear infinite; }
+.animate-page-flutter { animation: pageFlutter 7s ease-in-out infinite; }
+.animate-phone-glow { animation: phoneGlow 10s linear infinite; }
+.animate-date-pulse { animation: datePulse 3s ease-in-out infinite; }
+.animate-breathe   { animation: breathe 4s ease-in-out infinite; }
+.animate-spin      { animation: spin 1s linear infinite; }
+.animate-fade-in   { animation: blurIn 0.5s ease both; }
+.animate-caret-blink { animation: caretBlink 1s step-end infinite; }
+.animate-neon-flicker { animation: neonFlicker 6s linear infinite; }
+.animate-lamp { animation: neonFlicker 6s linear infinite; }
+.animate-intro-letter { animation: introLetter 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-player-pulse { animation: pulseGlowCyan 1.4s ease-in-out 2; }
+.animate-orbFloat1 { animation: orbFloat1 18s ease-in-out infinite; }
+.animate-orbFloat2 { animation: orbFloat2 22s ease-in-out infinite; }
+
+/* ── SOUND WAVE BARS (custom audio player) ────────────────── */
+@keyframes waveBar {
+  0%, 100% { height: 20%; }
+  50%      { height: 100%; }
+}
+
+/* ── GOLDEN RAIN (easter egg) ─────────────────────────────── */
+@keyframes goldenDrop {
+  0%   { transform: translateY(-12px); opacity: 0; }
+  10%  { opacity: 1; }
+  100% { transform: translateY(105vh); opacity: 0.15; }
+}
+
+/* ── PARTICLE DRIFT (ambient floating particles) ──────────── */
+@keyframes particleDrift {
+  0%   { transform: translate(0, 0) scale(1); opacity: 0; }
+  10%  { opacity: 0.6; }
+  90%  { opacity: 0.4; }
+  100% { transform: translate(var(--drift-x, 20px), var(--drift-y, -60px)) scale(0.5); opacity: 0; }
+}
+
+/* ── ORB PULSE (for decorative background orbs) ───────────── */
+@keyframes orbPulse {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50%      { transform: scale(1.15); opacity: 0.5; }
+}
+
+/* ── BORDER GLOW ANIMATION (for focus/hover accent borders) */
+@keyframes borderGlow {
+  0%, 100% { border-color: rgba(0, 212, 255, 0.2); }
+  50%      { border-color: rgba(0, 212, 255, 0.6); }
+}
+
+/* ── HERO TITLE GRADIENT (animated gradient text) ─────────── */
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ── SCROLL INDICATOR (bottom of pages) ───────────────────── */
+@keyframes scrollBounce {
+  0%, 100% { transform: translateY(0); opacity: 0.4; }
+  50%      { transform: translateY(6px); opacity: 0.8; }
+}
+
+/* ── FLOATING ORB BACKGROUND ──────────────────────────────── */
+@keyframes orbFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(30px, -20px) scale(1.05); }
+  66%      { transform: translate(-20px, 15px) scale(0.95); }
+}
+
+@keyframes orbFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(-25px, 15px) scale(1.08); }
+  66%      { transform: translate(20px, -25px) scale(0.92); }
+}
+
+/* ── MAGNETIC CURSOR GLOW ─────────────────────────────────── */
+.cursor-glow {
+  position: fixed;
+  width: 320px;
+  height: 320px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  transform: translate(-50%, -50%);
+  transition: left 0.15s ease-out, top 0.15s ease-out;
+}
+
+/* ── DIVIDER: glowing line ────────────────────────────────── */
+.divider-cyan {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.4), transparent);
+}
+
+.divider-magenta {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 45, 120, 0.4), transparent);
+}
+
+.divider-gold {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(240, 192, 64, 0.4), transparent);
+}
+
+/* ── ARTIFACT PHOTO TREATMENT ───────────────────────────────
+   Real photos: slightly desaturated, cool tint, deep shadow.
+   Hover: warm up, brighten, cyan border glow.
+*/
+
+.artifact-photo {
+  display: inline-block;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  transform: rotate(-1.5deg);
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  filter: saturate(0.9) contrast(1.04) brightness(0.9);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.4s ease,
+              box-shadow 0.4s ease,
+              border-color 0.4s ease;
+}
+
+.artifact-photo:hover {
+  transform: rotate(0deg) scale(1.04);
+  filter: saturate(1) contrast(1.02) brightness(1.05);
+  box-shadow:
+    0 18px 42px rgba(0, 0, 0, 0.75),
+    0 0 28px rgba(0, 212, 255, 0.15);
+  border-color: rgba(0, 212, 255, 0.35);
+}
+
+.artifact-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+}
+
+/* ── PROGRESS BAR (cyan lit) ──────────────────────────────── */
+.progress-cyan {
+  @apply h-1 overflow-hidden rounded-full bg-deep-700/60;
+}
+.progress-cyan-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, var(--color-cyan-deep), var(--color-cyan));
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.5);
+  transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── SCROLLBAR ────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0, 212, 255, 0.2); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0, 212, 255, 0.4); }
+
+/* ── SELECTION ────────────────────────────────────────────── */
+::selection {
+  background: rgba(0, 212, 255, 0.25);
+  color: #fff;
+}
+
+/* ── FOCUS ────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
