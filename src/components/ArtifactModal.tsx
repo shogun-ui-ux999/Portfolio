@@ -54,24 +54,24 @@ export default function ArtifactModal() {
         role="dialog"
         aria-modal="true"
         aria-label={`Exhibit plaque: ${artifact.title}`}
-        className="animate-fade-in fixed inset-0 z-[80] flex items-end justify-center overflow-y-auto bg-night-950/80 p-3 backdrop-blur-sm sm:items-center sm:p-6"
+        className="animate-fade-in fixed inset-0 z-[80] flex items-end justify-center overflow-y-auto bg-deep-950/80 p-3 backdrop-blur-sm sm:items-center sm:p-6"
         onClick={() => {
           if (!openCert) closeArtifact();
         }}
       >
         <div
-          className="animate-fade-up relative my-auto w-full max-w-2xl rounded-2xl border border-museum-gold/40 bg-night-800 shadow-[0_24px_80px_rgba(0,0,0,0.7)]"
+          className="animate-fade-up relative my-auto w-full max-w-2xl rounded-2xl border border-cyan/20 bg-deep-800 shadow-[0_24px_80px_rgba(0,0,0,0.7)]"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Gold top rule */}
-          <div aria-hidden className="h-px w-full bg-gradient-to-r from-transparent via-museum-gold/60 to-transparent" />
+          <div aria-hidden className="h-px w-full bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
 
           <button
             ref={closeRef}
             type="button"
             onClick={closeArtifact}
             aria-label="Close exhibit plaque"
-            className="absolute top-3.5 right-3.5 flex h-9 w-9 items-center justify-center rounded-full border border-paper-400/25 text-paper-300 transition-all duration-300 hover:border-amber-glow/60 hover:text-amber-glow"
+            className="absolute top-3.5 right-3.5 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-paper-faint transition-all duration-300 hover:border-cyan/40 hover:text-cyan"
           >
             <span aria-hidden className="text-lg leading-none">×</span>
           </button>
@@ -79,40 +79,40 @@ export default function ArtifactModal() {
           <div className="max-h-[82dvh] overflow-y-auto px-6 py-7 sm:px-10 sm:py-9">
             {/* Exhibit number + badges */}
             <div className="mb-3 flex flex-wrap items-center gap-2.5">
-              <span className="museum-label text-[0.6rem] text-museum-gold">
+              <span className="museum-label text-[0.55rem] text-cyan/70">
                 {artifact.exhibitNumber}
               </span>
               {artifact.isFailure && (
-                <span className="museum-label rounded-sm border border-fail-red/50 bg-fail-red/10 px-2 py-1 text-[0.55rem] text-fail-red">
+                <span className="museum-label rounded-sm border border-magenta/30 bg-magenta/5 px-2 py-1 text-[0.5rem] text-magenta/70">
                   Failure Exhibit
                 </span>
               )}
               {artifact.isSecret && (
-                <span className="museum-label rounded-sm border border-museum-gold/50 bg-museum-gold/10 px-2 py-1 text-[0.55rem] text-museum-gold">
-                  Curator's Private Item
+                <span className="museum-label rounded-sm border border-gold/30 bg-gold/5 px-2 py-1 text-[0.5rem] text-gold/80">
+                  Curator&apos;s Private Item
                 </span>
               )}
             </div>
 
             {/* Title + object name */}
-            <h2 className="font-serif text-3xl leading-tight text-paper-50 sm:text-4xl">
+            <h2 className="font-display text-3xl leading-tight text-paper sm:text-4xl">
               {artifact.title}
             </h2>
-            <p className="mt-2 font-hand text-xl text-amber-glow/90">
+            <p className="mt-2 font-hand text-xl text-gold/80">
               {artifact.objectName}
             </p>
 
-            <div aria-hidden className="my-5 h-px bg-paper-400/15" />
+            <div aria-hidden className="my-5 h-px bg-white/5" />
 
             {/* Story */}
-            <p className="max-w-prose text-[0.95rem] leading-relaxed text-paper-200/90">
+            <p className="max-w-prose text-[0.95rem] leading-relaxed text-paper/85">
               {artifact.story}
             </p>
 
             {/* Lesson block */}
-            <blockquote className="mt-6 rounded-lg border-l-2 border-amber-glow/70 bg-amber-glow/5 px-5 py-4">
-              <span className="museum-label block text-[0.55rem] text-amber-glow/80">Lesson</span>
-              <p className="mt-1.5 font-serif text-lg leading-snug text-paper-100 italic">
+            <blockquote className="mt-6 rounded-lg border-l-2 border-gold/50 bg-gold/5 px-5 py-4">
+              <span className="museum-label block text-[0.5rem] text-gold/70">Lesson</span>
+              <p className="mt-1.5 font-display text-lg leading-snug text-paper italic">
                 {artifact.lesson}
               </p>
             </blockquote>
@@ -126,7 +126,7 @@ export default function ArtifactModal() {
                     href={l.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="museum-label inline-flex items-center gap-2 rounded-full border border-museum-gold/40 px-4 py-2.5 text-[0.6rem] text-museum-gold transition-all duration-300 hover:border-museum-gold hover:bg-museum-gold/10"
+                    className="museum-label inline-flex items-center gap-2 rounded-full border border-gold/20 px-4 py-2.5 text-[0.55rem] text-gold/80 transition-all duration-300 hover:border-gold/40 hover:bg-gold/5"
                   >
                     {l.label}
                     <span aria-hidden>↗</span>
@@ -138,7 +138,7 @@ export default function ArtifactModal() {
             {/* Evidence detail cards (certificates etc.) */}
             {artifact.evidenceDetails && (
               <div className="mt-7">
-                <span className="museum-label text-[0.55rem] text-paper-300/60">
+                <span className="museum-label text-[0.55rem] text-paper-faint/50">
                   Evidence
                 </span>
                 <div className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -149,29 +149,25 @@ export default function ArtifactModal() {
               </div>
             )}
 
-            {/* Audio guide — the custom player when the curator has
-                recorded one (URLs fetched server-side, cached for the
-                session), transcript-only fallback otherwise.
-                Playback is strictly user-initiated, and unmounting the
-                modal stops the audio. */}
+            {/* Audio guide */}
             {artifact.audioGuideScript && (
               <div className="mt-7">
                 {audioUrl ? (
                   <div>
                     <AudioGuidePlayer
                       src={audioUrl}
+                      fallbackSrc={`/audio/${artifact.id}.mp3`}
                       title={`Audio Guide — ${artifact.title}`}
                       onPlayingChange={setAudioPlaying}
                     />
-                    {/* Read along: the transcript appears below the
-                        player while the recording plays. */}
+                    {/* Read along */}
                     {audioPlaying && (
-                      <div className="animate-fade-up mt-3 rounded-lg border border-screen/25 bg-screen/5 px-5 py-4">
-                        <span className="museum-label block text-[0.55rem] text-screen/80">
+                      <div className="animate-fade-up mt-3 rounded-lg border border-cyan/15 bg-deep-800/60 px-5 py-4">
+                        <span className="museum-label block text-[0.5rem] text-cyan/60">
                           Audio Guide Transcript
                         </span>
-                        <p className="mt-2 font-serif text-[1.05rem] leading-relaxed text-paper-100/90 italic">
-                          "{artifact.audioGuideScript}"
+                        <p className="mt-2 font-display text-[1.05rem] leading-relaxed text-paper italic">
+                          &quot;{artifact.audioGuideScript}&quot;
                         </p>
                       </div>
                     )}
@@ -182,18 +178,18 @@ export default function ArtifactModal() {
                       type="button"
                       onClick={() => setTranscriptOpen((v) => !v)}
                       aria-expanded={transcriptOpen}
-                      className="museum-label inline-flex items-center gap-2.5 rounded-full border border-screen/40 px-4 py-2.5 text-[0.6rem] text-screen transition-all duration-300 hover:border-screen hover:bg-screen/10"
+                      className="museum-label inline-flex items-center gap-2.5 rounded-full border border-cyan/20 px-4 py-2.5 text-[0.55rem] text-cyan/70 transition-all duration-300 hover:border-cyan/40 hover:bg-cyan/5"
                     >
-                      <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-screen shadow-[0_0_8px_rgba(127,180,217,0.8)]" />
+                      <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-cyan shadow-[0_0_8px_rgba(0,212,255,0.6)]" />
                       {transcriptOpen ? "Hide Audio Guide" : "Audio Guide"}
                     </button>
                     {transcriptOpen && (
-                      <div className="animate-fade-up mt-3 rounded-lg border border-screen/25 bg-screen/5 px-5 py-4">
-                        <span className="museum-label block text-[0.55rem] text-screen/80">
+                      <div className="animate-fade-up mt-3 rounded-lg border border-cyan/15 bg-deep-800/60 px-5 py-4">
+                        <span className="museum-label block text-[0.5rem] text-cyan/60">
                           Audio Guide Transcript
                         </span>
-                        <p className="mt-2 font-serif text-[1.05rem] leading-relaxed text-paper-100/90 italic">
-                          "{artifact.audioGuideScript}"
+                        <p className="mt-2 font-display text-[1.05rem] leading-relaxed text-paper italic">
+                          &quot;{artifact.audioGuideScript}&quot;
                         </p>
                       </div>
                     )}
@@ -205,7 +201,7 @@ export default function ArtifactModal() {
         </div>
       </div>
 
-      {/* Certificate Evidence View (nested above plaque) */}
+      {/* Certificate Evidence View */}
       {openCert && (
         <CertificateView detail={openCert} onClose={() => setOpenCert(null)} />
       )}
@@ -213,7 +209,7 @@ export default function ArtifactModal() {
   );
 }
 
-/** Museum-style evidence card for structured certificate data */
+/** Museum-style evidence card */
 function EvidenceCard({
   detail,
   onOpen,
@@ -226,26 +222,26 @@ function EvidenceCard({
   const inner = (
     <>
       <div className="flex items-start justify-between gap-2">
-        <p className="font-serif text-[1.05rem] text-paper-50">{detail.label}</p>
+        <p className="font-display text-[1.05rem] text-paper">{detail.label}</p>
         {hasCertView && (
-          <span className="museum-label shrink-0 rounded-sm border border-museum-gold/40 bg-museum-gold/10 px-1.5 py-0.5 text-[0.5rem] text-museum-gold">
+          <span className="museum-label shrink-0 rounded-sm border border-gold/20 bg-gold/5 px-1.5 py-0.5 text-[0.5rem] text-gold/70">
             Verified
           </span>
         )}
       </div>
       {detail.description && (
-        <p className="mt-1 text-xs leading-relaxed text-paper-200/75">{detail.description}</p>
+        <p className="mt-1 text-xs leading-relaxed text-paper/70">{detail.description}</p>
       )}
       {detail.issuer && (
-        <p className="mt-1.5 text-xs text-paper-300/60">{detail.issuer}</p>
+        <p className="mt-1.5 text-xs text-paper-faint/50">{detail.issuer}</p>
       )}
       {detail.completionDate && (
-        <p className="museum-label mt-2 text-[0.55rem] text-paper-300/60">
+        <p className="museum-label mt-2 text-[0.5rem] text-paper-faint/50">
           Completed {detail.completionDate}
         </p>
       )}
       {detail.status && (
-        <p className="font-hand mt-1.5 text-base text-paper-300/60 italic">{detail.status}</p>
+        <p className="font-hand mt-1.5 text-base text-paper-faint/50 italic">{detail.status}</p>
       )}
     </>
   );
@@ -255,16 +251,16 @@ function EvidenceCard({
       <button
         type="button"
         onClick={onOpen}
-        className="rounded-xl border border-paper-400/20 bg-night-700/40 p-4 text-left transition-all duration-300 hover:border-museum-gold/50 hover:bg-night-700/70"
+        className="rounded-xl border border-white/10 bg-deep-700/40 p-4 text-left transition-all duration-300 hover:border-gold/30 hover:bg-deep-700/70"
       >
         {inner}
-        <span className="museum-label mt-3 block text-[0.5rem] text-museum-gold/80">
+        <span className="museum-label mt-3 block text-[0.5rem] text-gold/70">
           View Certificate →
         </span>
       </button>
     );
   }
   return (
-    <div className="rounded-xl border border-paper-400/15 bg-night-700/25 p-4">{inner}</div>
+    <div className="rounded-xl border border-white/5 bg-deep-700/25 p-4">{inner}</div>
   );
 }

@@ -11,6 +11,8 @@ import ArtifactModal from "./components/ArtifactModal";
 import QuickTour from "./components/QuickTour";
 import ListView from "./components/ListView";
 import SecretToast from "./components/SecretToast";
+import CursorGlow from "./components/CursorGlow";
+import Starfield from "./components/Starfield";
 import Entrance from "./pages/Entrance";
 import Bedroom from "./pages/Bedroom";
 import Failures from "./pages/Failures";
@@ -36,27 +38,45 @@ function BootCleaner() {
 
 function MuseumShell() {
   return (
-    <div className="lamp-room grain min-h-dvh">
-      <ScrollToTop />
-      <BootCleaner />
-      <Nav />
-      <main>
-        <Routes>
-          <Route path="/" element={<Entrance />} />
-          <Route path="/bedroom" element={<Bedroom />} />
-          <Route path="/failures" element={<Failures />} />
-          <Route path="/curator" element={<Curator />} />
-          <Route path="/gift-shop" element={<GiftShop />} />
-          <Route path="*" element={<Entrance />} />
-        </Routes>
-      </main>
-      {/* Global overlays (CertificateView lives inside ArtifactModal) */}
+    <div className="relative min-h-dvh bg-deep-950 overflow-x-hidden">
+      {/* Background layers — behind everything */}
+      <div className="fixed inset-0 z-0" aria-hidden>
+        <Starfield />
+        <div className="nebula animate-orbFloat1"
+          style={{ width: "600px", height: "600px", top: "10%", right: "5%", background: "radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%)" }}
+        />
+        <div className="nebula animate-orbFloat2"
+          style={{ width: "500px", height: "500px", bottom: "15%", left: "8%", background: "radial-gradient(circle, rgba(255,45,120,0.06) 0%, transparent 70%)" }}
+        />
+        <div className="vignette" />
+        <div className="scanlines" />
+      </div>
+
+      {/* Cursor glow */}
+      <CursorGlow />
+
+      <div className="relative z-10 flex min-h-dvh flex-col">
+        <ScrollToTop />
+        <BootCleaner />
+        <Nav />
+        <main className="flex-1 pt-16">
+          <Routes>
+            <Route path="/" element={<Entrance />} />
+            <Route path="/bedroom" element={<Bedroom />} />
+            <Route path="/failures" element={<Failures />} />
+            <Route path="/curator" element={<Curator />} />
+            <Route path="/gift-shop" element={<GiftShop />} />
+            <Route path="*" element={<Entrance />} />
+          </Routes>
+        </main>
+      </div>
+
+      {/* Global overlays */}
       <Overlays />
     </div>
   );
 }
 
-/** Overlays render inside the shell so they share the museum context */
 function Overlays(): ReactNode {
   return (
     <>
@@ -69,7 +89,6 @@ function Overlays(): ReactNode {
 }
 
 export default function App() {
-  // HashRouter keeps every deep link (e.g. /#/bedroom) working on static hosting
   return (
     <HashRouter>
       <MuseumProvider>

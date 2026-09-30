@@ -17,27 +17,33 @@ export default function Failures() {
   }, []);
 
   return (
-    <section className="lamp-room-shadow -mx-4 min-h-dvh px-4 py-24 sm:-mx-6 sm:px-6">
+    <section className="relative -mx-4 min-h-dvh px-4 py-24 sm:-mx-6 sm:px-6">
+      {/* Dark ambient glow */}
+      <div
+        aria-hidden
+        className="absolute left-1/2 top-0 h-96 w-[600px] -translate-x-1/2 rounded-full bg-magenta/5 blur-3xl"
+        style={{ filter: "blur(80px)" }}
+      />
+
       <div className="mx-auto max-w-4xl">
         {/* Header */}
         <div className="text-center">
-          <p className="museum-label animate-fade-up text-[0.6rem] text-fail-red/80">The Shadow Room</p>
-          <h1 className="animate-glitch mt-3 font-serif text-4xl text-paper-50 sm:text-5xl">
+          <p className="animate-fade-up text-[0.55rem] text-magenta/70 tracking-[0.4em] uppercase [animation-delay:80ms]">
+            The Shadow Room
+          </p>
+          <h1 className="animate-fade-up animate-glitch mt-3 font-display text-4xl text-paper sm:text-5xl [animation-delay:200ms]">
             The Museum of Failures
           </h1>
-          <p className="animate-fade-up mt-3 font-serif text-lg text-paper-200/75 italic [animation-delay:300ms]">
+          <p className="animate-fade-up mt-3 font-display text-lg text-paper/70 italic [animation-delay:320ms]">
             Exhibits that did not work, but changed how I think.
           </p>
-          <p
-            className="museum-label mt-5 text-[0.6rem] text-fail-amber/80"
-            aria-live="polite"
-          >
+          <p className="animate-fade-up mt-5 text-[0.55rem] text-magenta/60 tracking-[0.3em] uppercase [animation-delay:420ms]" aria-live="polite">
             Failures examined: {viewed} / {failureArtifacts.length}
           </p>
         </div>
 
         {/* Intro */}
-        <p className="mx-auto mt-8 max-w-2xl text-center text-[0.95rem] leading-relaxed text-paper-200/80">
+        <p className="mx-auto mt-8 max-w-2xl text-center text-[0.95rem] leading-relaxed text-paper/75">
           Most museums only display victories. This wing displays the moments that broke
           my plan, bruised my ego, and forced me to think differently. These are not
           achievements. They are evidence of growth.
@@ -45,15 +51,19 @@ export default function Failures() {
 
         {/* Caution divider */}
         <div aria-hidden className="mx-auto mt-10 flex max-w-xs items-center gap-3">
-          <span className="h-px flex-1 bg-gradient-to-r from-transparent to-fail-amber/30" />
-          <span className="museum-label text-[0.5rem] text-fail-amber/60">Restricted Wing</span>
-          <span className="h-px flex-1 bg-gradient-to-l from-transparent to-fail-amber/30" />
+          <span className="h-px flex-1 bg-gradient-to-r from-transparent to-magenta/30" />
+          <span className="museum-label text-[0.5rem] text-magenta/50">Restricted Wing</span>
+          <span className="h-px flex-1 bg-gradient-to-l from-transparent to-magenta/30" />
         </div>
 
-        {/* Failure exhibits */}
+        {/* Failure exhibits — dark cards with magenta accents */}
         <div className="mt-10 grid gap-6 sm:grid-cols-3">
           {failureArtifacts.map((a, i) => (
-            <div key={a.id} className="animate-fade-up" style={{ animationDelay: `${i * 160}ms` }}>
+            <div
+              key={a.id}
+              className="animate-fade-up"
+              style={{ animationDelay: `${i * 160}ms` }}
+            >
               <FailureCard
                 artifact={a}
                 tilt={i === 1 ? "rotate-0" : i === 0 ? "-rotate-1" : "rotate-1"}
@@ -67,12 +77,12 @@ export default function Failures() {
           <button
             type="button"
             onClick={openListView}
-            className="museum-label rounded-full border border-paper-400/20 px-6 py-3 text-[0.55rem] text-paper-300/70 transition-colors hover:border-museum-gold/40 hover:text-museum-gold"
+            className="museum-label rounded-full border border-white/10 px-6 py-3 text-[0.55rem] text-paper-faint/60 transition-colors hover:border-cyan/40 hover:text-cyan"
           >
             View the Full Collection
           </button>
-          <p className="mx-auto mt-8 max-w-md font-hand text-xl leading-snug text-paper-300/50 italic">
-            "Every exhibit here was once a plan I believed in."
+          <p className="mx-auto mt-8 max-w-md font-hand text-xl leading-snug text-paper-faint/40 italic">
+            &quot;Every exhibit here was once a plan I believed in.&quot;
           </p>
         </div>
       </div>
@@ -94,18 +104,18 @@ function FailureCard({
     <button
       type="button"
       onClick={() => openArtifact(artifact.id)}
-      className={`group relative flex flex-col items-center rounded-2xl border border-paper-400/12 bg-night-800/50 p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:border-fail-red/40 hover:bg-night-800/80 hover:shadow-[0_18px_45px_rgba(0,0,0,0.6)] ${tilt}`}
+      className={`group relative flex flex-col items-center rounded-2xl border border-white/5 bg-deep-800/50 p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:border-magenta/30 hover:bg-deep-800/80 hover:shadow-[0_18px_45px_rgba(0,0,0,0.6)] ${tilt}`}
     >
-      {/* Stamped exhibit mark — stamps itself in on reveal */}
+      {/* Stamped exhibit mark */}
       <span
         aria-hidden
-        className="animate-stamp museum-label absolute top-3 right-3 rounded-sm border border-fail-red/40 bg-night-900/60 px-1.5 py-0.5 text-[0.45rem] text-fail-red/70"
+        className="animate-stamp museum-label absolute top-3 right-3 rounded-sm border border-magenta/30 bg-deep-900/60 px-1.5 py-0.5 text-[0.45rem] text-magenta/60"
         style={{ transform: "rotate(6deg)" }}
       >
         Failure Exhibit
       </span>
 
-      <span className="museum-label text-[0.55rem] text-fail-red/80">
+      <span className="museum-label text-[0.55rem] text-magenta/60">
         {artifact.exhibitNumber}
       </span>
 
@@ -115,20 +125,20 @@ function FailureCard({
         </span>
       </div>
 
-      <h2 className="font-serif text-xl leading-snug text-paper-50 group-hover:text-amber-glow">
+      <h2 className="font-display text-xl leading-snug text-paper group-hover:text-gold">
         {artifact.title}
       </h2>
-      <p className="mt-1.5 font-hand text-base text-paper-300/60">{artifact.objectName}</p>
+      <p className="mt-1.5 font-hand text-base text-paper-faint/50">{artifact.objectName}</p>
 
       {/* Cracked border accent */}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-1 rounded-xl border border-dashed border-fail-red/10 transition-colors duration-300 group-hover:border-fail-red/25"
+        className="pointer-events-none absolute inset-1 rounded-xl border border-dashed border-magenta/8 transition-colors duration-300 group-hover:border-magenta/20"
       />
       {viewed && (
         <span
           aria-hidden
-          className="absolute -top-1.5 -left-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-fail-amber text-[0.55rem] text-night-900 shadow"
+          className="absolute -top-1.5 -left-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-gold text-[0.55rem] text-deep-950 shadow"
         >
           ✓
         </span>

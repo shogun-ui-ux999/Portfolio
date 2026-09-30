@@ -11,10 +11,7 @@ const filters: { id: Filter; label: string }[] = [
   { id: "secret", label: "Secret" },
 ];
 
-/**
- * Accessibility fallback — every artifact as a clean, readable list.
- * Opens the same ArtifactModal used everywhere else.
- */
+/** Accessibility fallback — every artifact as a clean, readable list. */
 export default function ListView() {
   const { listViewOpen, closeListView, openArtifact } = useMuseum();
   const [filter, setFilter] = useState<Filter>("all");
@@ -56,20 +53,20 @@ export default function ListView() {
       role="dialog"
       aria-modal="true"
       aria-label="Full artifact list"
-      className="animate-fade-in fixed inset-0 z-[82] flex items-start justify-center overflow-y-auto bg-night-950/88 p-4 backdrop-blur-sm sm:p-8"
+      className="animate-fade-in fixed inset-0 z-[82] flex items-start justify-center overflow-y-auto bg-deep-950/88 p-4 backdrop-blur-sm sm:p-8"
       onClick={closeListView}
     >
       <div
-        className="animate-fade-up my-6 w-full max-w-3xl rounded-2xl border border-museum-gold/35 bg-night-800 shadow-[0_24px_80px_rgba(0,0,0,0.75)]"
+        className="animate-fade-up my-6 w-full max-w-3xl rounded-2xl border border-cyan/20 bg-deep-800 shadow-[0_24px_80px_rgba(0,0,0,0.75)]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-4 px-5 pt-6 sm:px-8 sm:pt-8">
           <div>
-            <p className="museum-label text-[0.55rem] text-museum-gold">Collection Index</p>
-            <h2 className="mt-1.5 font-serif text-2xl text-paper-50 sm:text-3xl">
+            <p className="museum-label text-[0.55rem] text-cyan/70">Collection Index</p>
+            <h2 className="mt-1.5 font-display text-2xl text-paper sm:text-3xl">
               Every Artifact, On Record
             </h2>
-            <p className="mt-1.5 text-sm text-paper-300/70">
+            <p className="mt-1.5 text-sm text-paper-faint/65">
               All twelve exhibits, from both wings of the museum.
             </p>
           </div>
@@ -77,7 +74,7 @@ export default function ListView() {
             type="button"
             onClick={closeListView}
             aria-label="Close artifact list"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-paper-400/25 text-paper-300 transition-colors hover:border-amber-glow/60 hover:text-amber-glow"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 text-paper-faint transition-colors hover:border-cyan/40 hover:text-cyan"
           >
             <span aria-hidden className="text-lg leading-none">×</span>
           </button>
@@ -96,10 +93,10 @@ export default function ListView() {
               role="tab"
               aria-selected={filter === f.id}
               onClick={() => setFilter(f.id)}
-              className={`museum-label rounded-full border px-3.5 py-2 text-[0.55rem] transition-colors duration-300 ${
+              className={`museum-label rounded-full border px-3.5 py-2 text-[0.55rem] transition-all duration-300 ${
                 filter === f.id
-                  ? "border-amber-glow/70 bg-amber-glow/10 text-amber-glow"
-                  : "border-paper-400/25 text-paper-300/70 hover:border-paper-300/50 hover:text-paper-100"
+                  ? "border-cyan/50 bg-cyan/10 text-cyan"
+                  : "border-white/10 text-paper-faint hover:border-white/20 hover:text-paper"
               }`}
             >
               {f.label}
@@ -114,35 +111,35 @@ export default function ListView() {
               <button
                 type="button"
                 onClick={() => openArtifact(a.id)}
-                className="group flex w-full items-center gap-4 rounded-xl border border-transparent px-3 py-3.5 text-left transition-all duration-300 hover:border-paper-400/20 hover:bg-night-700/50 focus-visible:border-museum-gold/50"
+                className="group flex w-full items-center gap-4 rounded-xl border border-transparent px-3 py-3.5 text-left transition-all duration-300 hover:border-cyan/20 hover:bg-deep-700/50 focus-visible:border-cyan/50"
               >
-                <span className="museum-label w-20 shrink-0 text-[0.55rem] text-museum-gold/80">
+                <span className="museum-label w-20 shrink-0 text-[0.55rem] text-cyan/60">
                   {a.exhibitNumber}
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="flex flex-wrap items-center gap-2">
-                    <span className="font-serif text-[1.05rem] text-paper-50 group-hover:text-amber-glow">
+                    <span className="font-display text-[1.05rem] text-paper group-hover:text-gold">
                       {a.title}
                     </span>
                     {a.isSecret && (
-                      <span className="museum-label rounded-sm border border-museum-gold/40 px-1.5 py-0.5 text-[0.45rem] text-museum-gold/80">
+                      <span className="museum-label rounded-sm border border-gold/20 px-1.5 py-0.5 text-[0.45rem] text-gold/70">
                         Private Item
                       </span>
                     )}
                     {a.isFailure && !a.isSecret && (
-                      <span className="museum-label rounded-sm border border-fail-red/40 px-1.5 py-0.5 text-[0.45rem] text-fail-red">
+                      <span className="museum-label rounded-sm border border-magenta/20 px-1.5 py-0.5 text-[0.45rem] text-magenta/60">
                         Failure Exhibit
                       </span>
                     )}
                   </span>
-                  <span className="mt-0.5 block truncate font-hand text-base text-paper-300/60">
+                  <span className="mt-0.5 block truncate font-hand text-base text-paper-faint/50">
                     {a.objectName}
                   </span>
-                  <span className="mt-1 block text-xs leading-relaxed text-paper-200/70">
+                  <span className="mt-1 block text-xs leading-relaxed text-paper/65">
                     {a.shortLabel ?? a.story}
                   </span>
                 </span>
-                <span className="museum-label hidden shrink-0 text-[0.5rem] text-paper-300/40 sm:block">
+                <span className="museum-label hidden shrink-0 text-[0.5rem] text-paper-faint/30 sm:block">
                   {a.category}
                 </span>
               </button>

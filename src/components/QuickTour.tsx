@@ -10,7 +10,6 @@ export default function QuickTour() {
   const [step, setStep] = useState(0);
   const navigate = useNavigate();
 
-  // Reset to the first stop each time the tour opens
   useEffect(() => {
     if (tourOpen) setStep(0);
   }, [tourOpen]);
@@ -44,23 +43,23 @@ export default function QuickTour() {
       role="dialog"
       aria-modal="true"
       aria-label="30-second guided tour"
-      className="animate-fade-in fixed inset-0 z-[85] flex items-center justify-center overflow-y-auto bg-night-950/90 p-4 backdrop-blur-sm"
+      className="animate-fade-in fixed inset-0 z-[85] flex items-center justify-center overflow-y-auto bg-deep-950/90 p-4 backdrop-blur-sm"
       onClick={closeTour}
     >
       <div
-        className="animate-scale-in relative w-full max-w-lg rounded-2xl border border-museum-gold/40 bg-night-800 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.75)] sm:p-9"
+        className="animate-scale-in relative w-full max-w-lg rounded-2xl border border-cyan/20 bg-deep-800 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.75)] sm:p-9"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           type="button"
           onClick={closeTour}
           aria-label="Skip tour"
-          className="museum-label absolute top-4 right-4 text-[0.55rem] text-paper-300/50 transition-colors hover:text-amber-glow"
+          className="museum-label absolute top-4 right-4 text-[0.55rem] text-paper-faint/40 transition-colors hover:text-cyan"
         >
           Skip
         </button>
 
-        <p className="museum-label text-[0.55rem] text-museum-gold">
+        <p className="museum-label text-[0.55rem] text-cyan/70">
           Quick Tour — Stop {step + 1} of {quickTour.length}
         </p>
 
@@ -70,7 +69,7 @@ export default function QuickTour() {
             <span
               key={i}
               className={`h-0.5 flex-1 rounded-full transition-colors duration-300 ${
-                i <= step ? "bg-amber-glow" : "bg-paper-400/20"
+                i <= step ? "bg-cyan" : "bg-white/10"
               }`}
             />
           ))}
@@ -84,21 +83,21 @@ export default function QuickTour() {
             openArtifact(tourArtifact.id);
           }}
           aria-label={`Open the full exhibit plaque for ${tourArtifact.title}`}
-          className="group mx-auto mt-7 flex h-36 w-full items-center justify-center rounded-xl border border-paper-400/15 bg-night-900/70 transition-colors duration-300 hover:border-museum-gold/40"
+          className="group mx-auto mt-7 flex h-36 w-full items-center justify-center rounded-xl border border-white/5 bg-deep-900/70 transition-all duration-300 hover:border-cyan/30 hover:shadow-[0_0_20px_rgba(0,212,255,0.1)]"
         >
           <span className="transition-transform duration-300 group-hover:scale-105">
             <ArtifactGlyph id={tourArtifact.id} />
           </span>
         </button>
-        <p className="museum-label mt-2 text-center text-[0.5rem] text-paper-300/40">
+        <p className="museum-label mt-2 text-center text-[0.5rem] text-paper-faint/30">
           Tap the object to open its full plaque
         </p>
 
         {/* Title + caption */}
-        <h2 className="mt-5 font-serif text-2xl text-paper-50 sm:text-3xl">
+        <h2 className="mt-5 font-display text-2xl text-paper sm:text-3xl">
           {tourArtifact.title}
         </h2>
-        <p className="mt-2.5 font-serif text-lg leading-snug text-paper-200/85 italic">
+        <p className="mt-2.5 font-display text-lg leading-snug text-paper/80 italic">
           {quickTour[step].caption}
         </p>
 
@@ -108,7 +107,7 @@ export default function QuickTour() {
             type="button"
             onClick={goBack}
             disabled={step === 0}
-            className="museum-label rounded-full border border-paper-400/25 px-4 py-2.5 text-[0.55rem] text-paper-300 transition-colors duration-300 hover:border-paper-300/50 hover:text-paper-100 disabled:cursor-not-allowed disabled:opacity-30"
+            className="museum-label rounded-full border border-white/10 px-4 py-2.5 text-[0.55rem] text-paper-faint transition-all duration-300 hover:border-white/20 hover:text-paper disabled:cursor-not-allowed disabled:opacity-30"
           >
             ← Back
           </button>
@@ -121,7 +120,7 @@ export default function QuickTour() {
                   closeTour();
                   navigate("/bedroom");
                 }}
-                className="museum-label rounded-full border border-amber-glow/60 bg-amber-glow/10 px-4 py-2.5 text-[0.55rem] text-amber-glow transition-colors duration-300 hover:bg-amber-glow/20"
+                className="museum-label rounded-full border border-cyan/40 bg-cyan/5 px-4 py-2.5 text-[0.55rem] text-cyan transition-all duration-300 hover:bg-cyan/10"
               >
                 Explore the Bedroom
               </button>
@@ -131,7 +130,7 @@ export default function QuickTour() {
                   closeTour();
                   navigate("/failures");
                 }}
-                className="museum-label rounded-full border border-fail-red/50 px-4 py-2.5 text-[0.55rem] text-fail-red transition-colors duration-300 hover:bg-fail-red/10"
+                className="museum-label rounded-full border border-magenta/30 px-4 py-2.5 text-[0.55rem] text-magenta/70 transition-all duration-300 hover:bg-magenta/5"
               >
                 Museum of Failures
               </button>
@@ -140,7 +139,7 @@ export default function QuickTour() {
             <button
               type="button"
               onClick={goNext}
-              className="museum-label rounded-full border border-amber-glow/60 bg-amber-glow/10 px-5 py-2.5 text-[0.55rem] text-amber-glow transition-colors duration-300 hover:bg-amber-glow/20"
+              className="museum-label rounded-full border border-cyan/40 bg-cyan/5 px-5 py-2.5 text-[0.55rem] text-cyan transition-all duration-300 hover:bg-cyan/10"
             >
               Next →
             </button>

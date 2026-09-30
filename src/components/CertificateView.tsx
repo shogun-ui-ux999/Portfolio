@@ -39,15 +39,15 @@ export default function CertificateView({
       role="dialog"
       aria-modal="true"
       aria-label={`Verified evidence: ${cert.course}`}
-      className="animate-fade-in fixed inset-0 z-[90] flex items-center justify-center overflow-y-auto bg-night-950/85 p-4 backdrop-blur-sm"
+      className="animate-fade-in fixed inset-0 z-[90] flex items-center justify-center overflow-y-auto bg-deep-950/85 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
         className="animate-fade-up my-auto w-full max-w-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="rounded-xl border border-museum-gold/50 bg-paper-50 p-[3px] shadow-[0_30px_90px_rgba(0,0,0,0.8)]">
-          <div className="rounded-[9px] border-2 border-night-900/15 bg-paper-50 px-6 py-9 sm:px-12 sm:py-12">
+        <div className="rounded-xl border border-gold/50 bg-paper p-[3px] shadow-[0_30px_90px_rgba(0,0,0,0.8)]">
+          <div className="rounded-[9px] border-2 border-deep-950/15 bg-paper px-6 py-9 sm:px-12 sm:py-12">
             {/* Verified Evidence stamp */}
             <div className="flex justify-center">
               <span className="museum-label inline-flex -rotate-2 items-center gap-1.5 rounded-sm border-2 border-emerald-800/60 px-3 py-1.5 text-[0.55rem] text-emerald-800/90">
@@ -57,24 +57,24 @@ export default function CertificateView({
             </div>
 
             {/* Certificate header */}
-            <p className="mt-6 text-center font-serif text-xs tracking-[0.4em] text-night-800/50 uppercase">
+            <p className="mt-6 text-center font-display text-xs tracking-[0.4em] text-deep-950/50 uppercase">
               {cert.title}
             </p>
-            <div aria-hidden className="mx-auto mt-4 h-px w-24 bg-night-900/25" />
+            <div aria-hidden className="mx-auto mt-4 h-px w-24 bg-deep-950/25" />
 
             {/* Name — prominent serif */}
-            <p className="mt-8 text-center font-serif text-3xl text-night-900 italic sm:text-4xl">
+            <p className="mt-8 text-center font-display text-3xl text-deep-950 italic sm:text-4xl">
               {cert.name}
             </p>
-            <p className="mt-4 text-center text-sm text-night-800/70">
+            <p className="mt-4 text-center text-sm text-deep-950/70">
               has successfully completed the
             </p>
-            <p className="mt-2 text-center font-serif text-xl font-semibold text-night-900 sm:text-2xl">
+            <p className="mt-2 text-center font-display text-xl font-semibold text-deep-950 sm:text-2xl">
               {cert.course}
             </p>
 
             {/* Details grid */}
-            <dl className="mt-9 space-y-3 border-t border-night-900/10 pt-6 text-center sm:text-left">
+            <dl className="mt-9 space-y-3 border-t border-deep-950/10 pt-6 text-center sm:text-left">
               <CertRow label="Issued by" value={cert.issuer} />
               <CertRow label="Completion date" value={cert.completionDate} />
               <CertRow label="Standards" value={cert.standards} />
@@ -83,10 +83,10 @@ export default function CertificateView({
 
             {/* Signature flourish */}
             <div className="mt-8 flex items-end justify-between gap-6">
-              <p className="font-hand text-2xl text-night-900/80 italic">
+              <p className="font-hand text-2xl text-deep-950/80 italic">
                 {cert.certifiedBy.split(" ").slice(0, 3).join(" ")}
               </p>
-              <p className="text-right text-[0.65rem] leading-snug text-night-800/50">
+              <p className="text-right text-[0.65rem] leading-snug text-deep-950/50">
                 Digital replica of the
                 <br />
                 original certificate
@@ -99,7 +99,7 @@ export default function CertificateView({
           ref={closeRef}
           type="button"
           onClick={onClose}
-          className="museum-label mx-auto mt-5 block rounded-full border border-paper-400/30 px-6 py-2.5 text-[0.6rem] text-paper-200 transition-colors hover:border-amber-glow/60 hover:text-amber-glow"
+          className="museum-label mx-auto mt-5 block rounded-full border border-white/20 px-6 py-2.5 text-[0.6rem] text-paper transition-colors hover:border-gold/50 hover:text-gold"
         >
           Close Certificate
         </button>
@@ -111,8 +111,8 @@ export default function CertificateView({
 function CertRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="grid gap-0.5 sm:grid-cols-[130px_1fr] sm:gap-3">
-      <dt className="museum-label text-[0.5rem] text-night-800/50">{label}</dt>
-      <dd className="text-[0.8rem] leading-relaxed text-night-900/85">{value}</dd>
+      <dt className="museum-label text-[0.5rem] text-deep-950/50">{label}</dt>
+      <dd className="text-[0.8rem] leading-relaxed text-deep-950/85">{value}</dd>
     </div>
   );
 }
